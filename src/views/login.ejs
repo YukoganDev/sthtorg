@@ -29,13 +29,14 @@
           </h2>
           <br>
         <h1 class="h3 mb-3 fw-normal">Login</h1>
-
+        <p style="color: red;"><%=msg%></p>
         <div class="form-floating">
           <input
             type="email"
             class="form-control"
             id="floatingInput"
             placeholder="name@domain.com"
+            name="email"
           />
           <label class="text-dark" for="floatingInput">Email</label>
         </div>
@@ -45,6 +46,7 @@
             class="form-control"
             id="floatingPassword"
             placeholder="Password"
+            name="password"
           />
           <label class="text-dark" for="floatingPassword">Password</label>
         </div>

@@ -11,6 +11,8 @@ import { config } from "./config";
 import { router as indexRouter } from "./routes/index";
 import { router as learnRouter } from "./routes/learn";
 import { router as loginRouter } from "./routes/login";
+import { router as logoutRouter } from "./routes/logout";
+import session from "express-session";
 
 const app: Application = express();
 const server: http.Server = http.createServer(app);
@@ -26,6 +28,11 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
 // Initialization
+app.use(session({
+  secret: config.SESSION_SECRET,
+  saveUninitialized: true,
+  resave: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -35,6 +42,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/", indexRouter);
 app.use("/learn", learnRouter);
 app.use("/login", loginRouter);
+app.use("/logout", logoutRouter);
 
 // WebSockets
 io.on('connect', (socket) => {
@@ -51,6 +59,8 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 
   let status = err.status || 500;
   res.status(status);
+  console.log(err);
+  
   res.send("Error: " + status);
 });
 
