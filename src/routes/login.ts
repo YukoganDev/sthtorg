@@ -17,7 +17,6 @@ router.post("/", (req: Request, res: Response, next: NextFunction) => {
         if (result === AccountResult.SUCCESS) {
             req.session.user = user.name;
             console.log(req);
-            
             try {
                 if (req.query.next) {
                     res.redirect(req.query.next.toString());
