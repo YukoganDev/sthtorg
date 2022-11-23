@@ -44,19 +44,23 @@
       </header>
 
       <main class="px-3">
-        <h1>Stht Learn</h1>
-        <p class="lead">
-          Cover is a one-page template for building simple and beautiful home
-          pages. Download, edit the text, and add your own fullscreen background
-          photo to make it your own.
-        </p>
-        <p class="lead">
-          <a
-            href="#"
-            class="btn btn-lg btn-secondary fw-bold border-white bg-white"
-            >Start</a
-          >
-        </p>
+        <div class="info-div">
+          <h1>Stht Learn</h1>
+          <br>
+          <p class="lead">
+            The most efficient studying platform by Stht.org
+          </p>
+          <p class="lead">
+            <br>
+            <button id="start-btn"
+              class="btn btn-lg btn-secondary fw-bold border-white bg-white"
+              >Start</button
+            >
+          </p>
+        </div>
+        <div class="learn-div" hidden>
+          
+        </div>
       </main>
 
       <footer class="mt-auto text-white-50">
@@ -79,6 +83,11 @@
           loginBtn.href = "/logout";
         } else {
           loginBtn.innerHTML = `Login`;
+        }
+
+        document.getElementById('start-btn').onclick = () => {
+          document.querySelector('.info-div').hidden = true;
+          document.querySelector('.learn-div').hidden = false;
         }
       </script>
   </body>

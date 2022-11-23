@@ -4,5 +4,5 @@ import { checkLogin } from "./login";
 export const router = Router();
 
 router.get("/", checkLogin, (req, res, next) => {
-    res.render("learn", { user: null });
+    res.render("learn", { user: req.session.user || null });
 });
