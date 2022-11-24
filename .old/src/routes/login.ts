@@ -17,7 +17,14 @@ router.post("/", (req: Request, res: Response, next: NextFunction) => {
         if (result === AccountResult.SUCCESS) {
             req.session.user = user.name;
             console.log(req);
-            res.redirect('/')
+            try {
+                if (req.query.next) {
+                    res.redirect(req.query.next.toString());
+                }
+            } catch (e) {
+                console.log(e);
+                res.redirect('/')
+            }
             return;
         } else if (result === AccountResult.ERROR) {
             res.render('login', { msg: 'Invalid credentials' });
