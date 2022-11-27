@@ -55,10 +55,9 @@ app.use("/logout", logoutRouter);
 // WebSockets
 io.on('connect', (socket) => {
   let handshake: any = socket.handshake;
-  socket.on('saveCard', ({ el }) => {
+  socket.on('saveCard', ({ name }) => {
     if (!handshake.session.user) { return; }
-    console.log(handshake.session.user);
-    console.log(el);
+    console.log(name);
     
   });
   console.log(`${socket.id} (user account: '${handshake.session.user}') connected`);
