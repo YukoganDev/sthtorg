@@ -18,8 +18,9 @@ CREATE TABLE "UserPreferences" (
 CREATE TABLE "Card" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "name" TEXT NOT NULL,
-    "authorId" INTEGER,
-    CONSTRAINT "Card_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE
+    "authorId" INTEGER NOT NULL,
+    "userId" INTEGER,
+    CONSTRAINT "Card_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateIndex

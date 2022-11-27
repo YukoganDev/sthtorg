@@ -16,6 +16,7 @@ import session, { Session } from "express-session";
 import { AccountResult, checkCredentials, createUser } from "./accountdb/user";
 import { User } from "@prisma/client";
 import { Handshake } from "socket.io/dist/socket";
+import { createUserCard } from "./accountdb/cardManagement";
 
 const app: Application = express();
 const server: http.Server = http.createServer(app);
@@ -57,8 +58,13 @@ io.on('connect', (socket) => {
   let handshake: any = socket.handshake;
   socket.on('saveCard', ({ name }) => {
     if (!handshake.session.user) { return; }
-    console.log(name);
-    
+    if (name) {
+      console.log(name, handshake.session.user);
+      
+      createUserCard(name, handshake.session.user, (err: string) => {
+        console.log(err); 
+      });
+    }
   });
   console.log(`${socket.id} (user account: '${handshake.session.user}') connected`);
 });
