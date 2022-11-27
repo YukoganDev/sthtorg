@@ -135,9 +135,18 @@
     scale: 1;
   }
 }
+.card {
+  transition: 0.3s;
+}
+.card:hover {
+  scale: 1.1;
+}
 .card .card-text {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-lines: 1;
+}
+.create-term-btn {
+  vertical-align: middle;
 }
