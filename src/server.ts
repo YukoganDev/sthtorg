@@ -10,9 +10,11 @@ import { config } from "./config";
 
 import { router as indexRouter } from "./routes/index";
 import { router as learnRouter } from "./routes/learn";
-import { router as loginRouter } from "./routes/login";
+//import { router as loginRouter } from "./routes/login";
 import { router as logoutRouter } from "./routes/logout";
 import session from "express-session";
+import { createUser } from "./accountdb/user";
+import { User } from "@prisma/client";
 
 const app: Application = express();
 const server: http.Server = http.createServer(app);
@@ -41,7 +43,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // Routers
 app.use("/", indexRouter);
 app.use("/learn", learnRouter);
-app.use("/login", loginRouter);
+//app.use("/login", loginRouter);
 app.use("/logout", logoutRouter);
 
 // WebSockets
@@ -56,7 +58,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};
-
+  user: User, 
   let status = err.status || 500;
   res.status(status);
   console.log(err);
@@ -66,4 +68,8 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 
 server.listen(config.PORT, () => {
   console.log(`Server running on port ${config.PORT}`);
+});
+
+createUser('bo3b233', 'bo32b33@gmail.com', 'hello123', (result: typeof AccountResult, user: User) => {
+  console.log(result, user);
 });
