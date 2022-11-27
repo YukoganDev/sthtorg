@@ -1,6 +1,7 @@
 import { AccountResult } from './../accountdb/user';
 import { Router, Request, Response, NextFunction } from "express";
 import { checkCredentials } from "../accountdb/user";
+import { SessionData } from 'express-session';
 
 export const router = Router();
 
