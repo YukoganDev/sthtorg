@@ -73,16 +73,12 @@
               <div class="col">
                 <div class="card shadow-sm bg-dark">
                   <div class="card-body align-items-center">
-                    <p class="card-text">
-                      New card
-                    </p>
-                    <div
-                      class="justify-content-between align-items-center"
-                    >
+                    <p class="card-text">New card</p>
+                    <div class="justify-content-between align-items-center">
                       <div class="btn-group align-self-end">
                         <button
                           type="button"
-                          class="btn btn-sm btn-outline-success"
+                          class="btn btn-sm btn-outline-success create-btn"
                         >
                           Create
                         </button>
@@ -100,12 +96,10 @@
         <p>&copy; Stht Studios 2022</p>
       </footer>
     </div>
-    <script type="module">
-      import { io } from "https://cdn.socket.io/4.4.1/socket.io.esm.min.js";
-
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script defer>
       const socket = io();
-    </script>
-    <script>
+      
       const loginBtn = document.querySelector("#login-btn");
       let user = "<%=user%>";
       console.log(`Logged in as ${user}`);
@@ -117,12 +111,36 @@
       }
 
       document.getElementById("start-btn").onclick = () => {
-        document.querySelector("#start-btn").innerHTML = '<span class="material-symbols-outlined"> cached </span>';
+        document.querySelector("#start-btn").innerHTML =
+          '<span class="material-symbols-outlined"> cached </span>';
         setTimeout(() => {
-        document.querySelector(".info-div").hidden = true;
-        document.querySelector(".learn-div").hidden = false;
+          document.querySelector(".info-div").hidden = true;
+          document.querySelector(".learn-div").hidden = false;
         }, 500);
       };
+
+      document.querySelector(".create-btn").onclick = () => {
+        createCard({
+          name: 'Name this card...',
+          nameEditable: true,
+          buttonName: 'Cancel',
+          extraButtonName: 'Save',
+          buttonType: 'danger',
+          extraButtonType: 'success',
+          space: true,
+          buttonActions: (id) => {
+            document.getElementById(id).remove();
+          },
+          extraButtonActions: (id) => {
+            console.log(document.getElementById(id));
+            sendPkt('saveCard', { name: document.getElementById(id).querySelector('.card-text').innerHTML })
+          }
+        });
+      };
+
+      function sendPkt(eventName, pkt) {
+        socket.emit(eventName, pkt)
+      }
 
       function edit(el) {
         console.log(el);
@@ -141,36 +159,44 @@
         el.parentNode.parentNode.parentNode.remove(el.parentNode.parentNode);
       }
 
-      function createCard(name) {
+      function createCard({ name, buttonName = 'Learn', extraButtonName = 'Edit', buttonType = 'secondary', extraButtonType = 'secondary', space = false, nameEditable = false, buttonActions = null, extraButtonActions = null }) {
+        let btnGroup = 'btn-group';
+        if (space) { btnGroup = ''; }
+        let extraNameProps = '';
+        if (nameEditable) { extraNameProps = 'contentEditable = "true"'; }
+        let id = (Math.random().toString()).replace('0.', '');
+        console.log(id);
         let el = `
-        <div class="col">
+        <div class="col" id="${id}">
                 <div class="card shadow-sm bg-dark">
                   <div class="card-body align-items-center">
-                    <p class="card-text">
+                    <p class="card-text" ${extraNameProps}>
                       ${name}
                     </p>
                     <div
                       class="justify-content-between align-items-center"
                     >
-                      <div class="btn-group align-self-end">
+                      <div class="${btnGroup} align-self-end">
                         <button
                           type="button"
-                          class="btn btn-sm btn-outline-secondary"
+                          onclick="(${buttonActions})('${id}');"
+                          class="btn btn-sm btn-outline-${buttonType}"
                         >
-                          Learn
+                          ${buttonName}
                         </button>
                         <button
                           type="button"
-                          class="btn btn-sm btn-outline-secondary"
+                          onclick="(${extraButtonActions})('${id}');"
+                          class="btn btn-sm btn-outline-${extraButtonType}"
                         >
-                          Edit
+                          ${extraButtonName}
                         </button>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-          `
+          `;
         document.querySelector(".cards").insertAdjacentHTML("beforeend", el);
       }
 
