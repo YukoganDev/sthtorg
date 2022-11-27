@@ -95,48 +95,56 @@
     <script defer>
       const socket = io();
 
-      const loginBtn = document.querySelector("#login-btn");
-      let user = "<%=user%>";
+      const loginBtn = document.querySelector('#login-btn');
+      let user = '<%=user%>';
       console.log(`Logged in as ${user}`);
       if (user) {
         loginBtn.innerHTML = `Logout (${user})`;
-        loginBtn.href = "/logout";
+        loginBtn.href = '/logout';
       } else {
         loginBtn.innerHTML = `Login`;
       }
 
-      document.getElementById("start-btn").onclick = () => {
-        document.querySelector("#start-btn").innerHTML =
+      document.getElementById('start-btn').onclick = () => {
+        document.querySelector('#start-btn').innerHTML =
           '<span class="material-symbols-outlined"> cached </span>';
         setTimeout(() => {
-          document.querySelector(".info-div").hidden = true;
-          document.querySelector(".learn-div").hidden = false;
+          document.querySelector('.info-div').hidden = true;
+          document.querySelector('.learn-div').hidden = false;
         }, 500);
       };
 
-      document.querySelector(".create-btn").onclick = () => {
+      document.querySelector('.create-btn').onclick = () => {
         createCard({
-          name: "Name this card...",
+          name: 'Name this card...',
           nameEditable: true,
-          buttonName: "Cancel",
-          extraButtonName: "Save",
-          buttonType: "danger",
-          extraButtonType: "success",
+          buttonName: 'Cancel',
+          extraButtonName: 'Save',
+          buttonType: 'danger',
+          extraButtonType: 'success',
           space: true,
           buttonActions: (id) => {
             document.getElementById(id).remove();
           },
           extraButtonActions: (id) => {
-            console.log(
-              document.getElementById(id).querySelector(".card-text").innerText
+            console.log( 
+              document.getElementById(id).querySelector('.card-text').innerText
             );
-            sendPkt("saveCard", {
-              name: document.getElementById(id).querySelector(".card-text")
+            sendPkt('saveCard', {
+              name: document.getElementById(id).querySelector('.card-text')
                 .innerText,
             });
           },
         });
       };
+
+      function cancel(el, id) {
+        if (id) {
+          document.getElementById(id).remove();
+          return;
+        }
+        el.remove();
+      }
 
       function sendPkt(eventName, pkt) {
         socket.emit(eventName, pkt);
@@ -148,7 +156,7 @@
           el.contentEditable = true;
         }
         el.onkeypress = (event) => {
-          if (event.key === "Enter") {
+          if (event.key === 'Enter') {
             event.preventDefault();
             el.contentEditable = false;
           }
@@ -160,9 +168,9 @@
       }
 
       function generateId(length) {
-        var result = "";
+        var result = '';
         var characters =
-          "A-B-C-D-E-F-G-H-I-J-K-L-M-N-O-P-Q-R-S-T-U-V-W-X-Y-Z-a-b-c-d-e-f-g-h-i-j-k-l-m-n-o-p-q-r-s-t-u-v-w-x-y-z";
+          'A-B-C-D-E-F-G-H-I-J-K-L-M-N-O-P-Q-R-S-T-U-V-W-X-Y-Z-a-b-c-d-e-f-g-h-i-j-k-l-m-n-o-p-q-r-s-t-u-v-w-x-y-z';
         var charactersLength = characters.length;
         for (var i = 0; i < length; i++) {
           result += characters.charAt(
@@ -174,20 +182,20 @@
 
       function createCard({
         name,
-        buttonName = "Learn",
-        extraButtonName = "Edit",
-        buttonType = "secondary",
-        extraButtonType = "secondary",
+        buttonName = 'Learn',
+        extraButtonName = 'Edit',
+        buttonType = 'secondary',
+        extraButtonType = 'secondary',
         space = false,
         nameEditable = false,
         buttonActions = null,
         extraButtonActions = null,
       }) {
-        let btnGroup = "btn-group";
+        let btnGroup = 'btn-group';
         if (space) {
-          btnGroup = "";
+          btnGroup = '';
         }
-        let extraNameProps = "";
+        let extraNameProps = '';
         if (nameEditable) {
           extraNameProps =
             'contentEditable = "true" style="background-color: #292d31;"';
@@ -226,7 +234,7 @@
                 </div>
               </div>
           `;
-        document.querySelector(".cards").insertAdjacentHTML("beforeend", el);
+        document.querySelector('.cards').insertAdjacentHTML('beforeend', el);
 
         if (nameEditable) {
           let node = document.querySelector(`.${id.toString()}`);
@@ -247,7 +255,7 @@
           selection.removeAllRanges();
           selection.addRange(range);
         } else {
-          console.warn("Could not select text: Unsupported browser");
+          console.warn('Could not select text: Unsupported browser');
         }
       }
 
@@ -271,7 +279,7 @@
               </div>
             </a>
         `;
-        document.querySelector("#terms").insertAdjacentHTML("beforeend", el);
+        document.querySelector('#terms').insertAdjacentHTML('beforeend', el);
       }
     </script>
   </body>

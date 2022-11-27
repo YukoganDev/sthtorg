@@ -55,3 +55,4 @@ export const checkCredentials = async ({ email, password }: AccountData, cb: Fun
   }
   cb(AccountResult.ERROR);
 }
+
