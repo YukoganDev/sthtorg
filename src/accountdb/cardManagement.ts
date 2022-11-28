@@ -33,23 +33,23 @@ export async function createUserCard(title: string, name: string, cb: Function) 
   console.log(cardsByUser);
 }
 
-export async function createTerm(term: string, definition: string, name: string, cardName: string, cb: Function) {
+export async function createTerm(term: string, definition: string, userName: string, cardId: number, cb: Function) {
   let userExists = await prisma.user.findUnique({
     where: {
-      name
+      name: userName
     }
   });
   if (!userExists) {
-    cb('Unexpected error (no such user)');
+    cb('Unexpected error (no such user)', null);
     return;
   }
   let cardExists = await prisma.card.findUnique({
     where: {
-      name: cardName
+      id: cardId
     }
   });
   if (!cardExists) {
-    cb('Unexpected error (no such card)');
+    cb('Unexpected error (no such card)', null);
     return;
   }
   // let termExists = await prisma.term.findUnique({
@@ -60,6 +60,16 @@ export async function createTerm(term: string, definition: string, name: string,
   // if (termExists) {
   //   cb('Term alrea')
   // }
+  let termExists = await prisma.term.findFirst({
+    where: {
+      term,
+      definition
+    }
+  });
+  if (termExists) {
+    cb('The exact same term already exists!', null);
+    return;
+  }
   let existingTerm = await prisma.term.create({
     data: {
       term,
@@ -68,6 +78,8 @@ export async function createTerm(term: string, definition: string, name: string,
       cardId: cardExists.id
     }
   });
+  // console.log(existingTerm);
+  cb(null, existingTerm);
 }
 
 export async function getUserCards(name: string, cb: Function) {
@@ -93,14 +105,15 @@ export async function getCardTerms(cardId: number, cb: Function) {
     cb('Unexpected error (no card id provided)');
     return;
   }
+  
   let cardExists = await prisma.card.findUnique({
     where: {
       id: cardId
     }
-  }).catch((e) => {
+  })/*.catch((e) => {
     console.log('Unexpected GET');
     return;
-  });
+  })*/;
   if (!cardExists) {
     cb('Unexpected error (no such user)', null);
     return;
@@ -114,5 +127,28 @@ export async function getCardTerms(cardId: number, cb: Function) {
     cb('No terms found', null)
     return;
   }
+  console.log(terms);
+  
   cb(null, terms);
+  
+}
+
+export async function removeCardTerm(cardId: number, term: string, definition: string, cb: Function) {
+  // let termExists = await prisma.term.findFirst({
+  //   where: {
+  //     term,
+  //     definition
+  //   }
+  // });
+  // if (!termExists) {
+  //   cb('Unexpected error (no such card)');
+  //   return;
+  // }
+  await prisma.term.deleteMany({
+    where: {
+      term,
+      definition,
+      cardId
+    }
+  });
 }

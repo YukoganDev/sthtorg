@@ -62,18 +62,33 @@
 .learn-div {
   width: 100%;
   height: 100%;
+  justify-content: center;
 }
 .delete-btn {
   border: none;
   background: transparent;
 }
+
+.edit-btn {
+  border: none;
+  background: transparent;
+}
+.edit {
+  vertical-align: middle;
+  transition: 0.3s;
+}
+.edit:hover {
+  scale: 1.2;
+  color: blue;
+}
+
 .delete {
   transition: 0.3s;
   vertical-align: middle;
 }
 .delete:hover {
   color: crimson;
-  scale: 1.1;
+  scale: 1.2;
 }
 .term {
   text-align: left;
@@ -81,7 +96,7 @@
 }
 .definition {
   text-align: left;
-  cursor:crosshair;
+  cursor: text;
 }
 .item {
   transition: 0.3s;
@@ -92,14 +107,15 @@
 #wrapper {
   border: rgba(255, 255, 255, 0.2) 1px dashed;
   border-radius: 6px;
-  height: 40rem;
+  /* height: 40rem; */
   width: 100%;
-  max-height: 40rem;
+  /* max-height: 40rem; */
+  height: 70vh;
   /* padding-right: 17px;
   padding-top: 17px;
   padding-left: 17px; */
   padding: 17px;
-  box-sizing: content-box;
+  box-sizing: border-box;
   overflow-y: scroll;
   align-items: center;
   justify-items: center;
@@ -135,6 +151,37 @@
     scale: 1;
   }
 }
+@keyframes success {
+  0% {
+    background-color: #90ee90;
+    scale: 1.2;
+  }
+  100% {
+    background-color: #fff;
+    scale: 1;
+  }
+}
+@keyframes error {
+  0% {
+    background-color: crimson;
+    scale: 1.2;
+  }
+  100% {
+    background-color: #fff;
+    scale: 1;
+  }
+}
+@keyframes error-and-delete {
+  0% {
+    background-color: crimson;
+    scale: 1.2;
+  }
+  100% {
+    background-color: #fff;
+    scale: 1;
+    opacity: 0;
+  }
+}
 .card {
   transition: 0.3s;
 }
@@ -149,4 +196,31 @@
 }
 .create-term-btn {
   vertical-align: middle;
+}
+#termDiv {
+  word-wrap: break-word;
+  line-break: anywhere;
+  max-width: max-content;
+  width: 100%;
+}
+#termDiv p {
+  transition: 0.7s;
+  border-radius: 3px;
+}
+.termItem:hover hr {
+  width: 100%;
+}
+.termItem {
+  overflow: hidden;
+}
+hr {
+  transition: 0.5s;
+  /* margin-top: 1rem;
+  margin-bottom: 1rem;
+  border: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1); */
+  width: 100%;
+}
+.fullwidth {
+  width: 100%;
 }
