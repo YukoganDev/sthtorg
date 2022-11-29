@@ -60,16 +60,16 @@ export async function createTerm(term: string, definition: string, userName: str
   // if (termExists) {
   //   cb('Term alrea')
   // }
-  let termExists = await prisma.term.findFirst({
-    where: {
-      term,
-      definition
-    }
-  });
-  if (termExists) {
-    cb('The exact same term already exists!', null);
-    return;
-  }
+  // let termExists = await prisma.term.findFirst({
+  //   where: {
+  //     term,
+  //     definition
+  //   }
+  // });
+  // if (termExists) {
+  //   cb('The exact same term already exists!', null);
+  //   return;
+  // }
   let existingTerm = await prisma.term.create({
     data: {
       term,
@@ -133,22 +133,54 @@ export async function getCardTerms(cardId: number, cb: Function) {
   
 }
 
-export async function removeCardTerm(cardId: number, term: string, definition: string, cb: Function) {
-  // let termExists = await prisma.term.findFirst({
-  //   where: {
-  //     term,
-  //     definition
-  //   }
-  // });
-  // if (!termExists) {
-  //   cb('Unexpected error (no such card)');
-  //   return;
-  // }
+export async function removeCardTerm(cardId: number, termId: number, cb: Function) {
   await prisma.term.deleteMany({
     where: {
-      term,
-      definition,
+      id: termId,
       cardId
     }
   });
+}
+export async function removeCard(cardId: number) {
+  await prisma.term.deleteMany({
+    where: {
+      cardId
+    }
+  });
+  let success = await prisma.card.delete({
+    where: {
+      id: cardId
+    }
+  });
+  console.log('Card removal result :', success);
+  
+}
+
+export async function updateTerm(cardId: number, termId: number, term: string, definition: string, cb: Function) {
+  console.log(termId);
+  if (!termId || !cardId) {
+    cb('No termId | cardId were provided,', termId, cardId);
+    return;
+  }
+  
+  let termExists = prisma.term.findUnique({
+    where: {
+      id: termId
+    }
+  });
+  if (!termExists) {
+    cb('Unexpected error (no such term)');
+    return;
+  }
+  let updated = await prisma.term.update({
+    where: {
+      id: termId
+    },
+    data: {
+      term,
+      definition
+    }
+  });
+  console.log(updated);
+  
 }

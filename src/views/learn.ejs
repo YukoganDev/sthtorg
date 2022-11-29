@@ -67,10 +67,20 @@
                 type="button"
                 id="create-term-btn"
                 class="btn btn-sm btn-outline-success">
-                <span class="material-symbols-outlined create-term-btn">
+                <span class="material-symbols-outlined gicon-btn">
                   add
                 </span>
                 Add term
+              </a>
+              <a
+                href="#"
+                type="button"
+                id="delete-card-btn"
+                class="btn btn-sm btn-outline-danger">
+                <span class="material-symbols-outlined gicon-btn">
+                  delete
+                </span>
+                Delete card
               </a>
               <div class="wrap list-group w-auto terms"></div>
             </div>
@@ -328,12 +338,21 @@
         }
       };
 
+      document.querySelector('#delete-card-btn').onclick = (el) => {
+        sendPkt('removeCard', {
+          cardId: getCardId(),
+        });
+      };
+
+      socket.on('reloadCards', () => {
+        window.location.reload();
+      });
+
       function removeTerm(el) {
         el.style.animation = 'error-and-delete 1s ease 1';
         socket.emit('removeTerm', {
-          term: el.querySelector('.term').innerText,
-          definition: el.querySelector('.definition').innerText,
-          cardId: getCardId(),
+          termId: parseInt(el.querySelector('#termDiv').dataset.termid),
+          cardId: parseInt(el.querySelector('#termDiv').dataset.cardid)
         });
         setTimeout(() => {
           el.remove(el);
@@ -390,7 +409,7 @@
             cardId: parseInt(termDiv.dataset.cardid),
             term: el.parentNode.querySelector('.term').innerText,
             definition: el.parentNode.querySelector('.definition').innerText,
-            id: parseInt(termDiv.dataset.termid)
+            termId: parseInt(termDiv.dataset.termid)
           });
           mainElement.style.animation = 'success 1s ease 1';
           termDiv.querySelectorAll('p').forEach((cn) => {
@@ -410,6 +429,7 @@
         el.querySelector('span').innerText = 'done';
       };
 
+      // Utils
       function preventEnter(event) {
         if (event.key === 'Enter') {
           event.preventDefault();

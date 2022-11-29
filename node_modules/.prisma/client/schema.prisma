@@ -42,5 +42,5 @@ model Term {
   term       String
   definition String
   cardId     Int
-  authorId   Int
+  authorId   Int?
 }
