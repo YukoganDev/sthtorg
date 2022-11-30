@@ -16,7 +16,7 @@ import session, { Session } from "express-session";
 import { AccountResult, checkCredentials, createUser } from "./accountdb/user";
 import { User } from "@prisma/client";
 import { Handshake } from "socket.io/dist/socket";
-import { createUserCard, getUserCards, getCardTerms, createTerm, removeCardTerm } from "./accountdb/cardManagement";
+import { createUserCard, getUserCards, getCardTerms, createTerm, removeCardTerm, updateTerm, removeCard } from "./accountdb/cardManagement";
 
 const app: Application = express();
 const server: http.Server = http.createServer(app);
@@ -70,6 +70,10 @@ io.on('connect', (socket) => {
       });
     }
   });
+  socket.on('removeCard', ({ cardId }) => {
+    removeCard(cardId);
+    socket.emit('reloadCards');
+  });
   socket.on('saveTerm', ({ cardId, term, definition }) => {
     console.log(cardId, term, definition);
     createTerm(term, definition, handshake.session.user, cardId, (err: string, term: any) => {
@@ -82,8 +86,16 @@ io.on('connect', (socket) => {
       }
     });
   });
-  socket.on('removeTerm', ({ cardId, term, definition }) => {
-    removeCardTerm(cardId, term, definition, (err: string) => {
+  socket.on('removeTerm', ({ cardId, termId }) => {
+    removeCardTerm(cardId, termId, (err: string) => {
+      if (err) {
+        console.error(err);
+        socket.emit('error', err);
+      }
+    });
+  });
+  socket.on('updateTerm', ({ cardId, termId, term, definition }) => {
+    updateTerm(cardId, termId, term, definition, (err: string) => {
       if (err) {
         console.error(err);
         socket.emit('error', err);

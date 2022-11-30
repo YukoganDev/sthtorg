@@ -23,6 +23,15 @@ CREATE TABLE "Card" (
     CONSTRAINT "Card_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
+-- CreateTable
+CREATE TABLE "Term" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "term" TEXT NOT NULL,
+    "definition" TEXT NOT NULL,
+    "cardId" INTEGER NOT NULL,
+    "authorId" INTEGER
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 

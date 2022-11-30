@@ -5,4 +5,5 @@ export const router = Router();
 
 router.get("/", (req, res, next) => {
     res.render("index", { user: req.session.user || null });
+    res.end();
 });

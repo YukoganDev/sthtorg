@@ -7,4 +7,5 @@ export const router = Router();
 
 router.get("/", checkLogin, (req, res, next) => {
     res.render("learn", { user: req.session.user || null });
+    res.end();
 });
