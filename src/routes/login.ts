@@ -10,7 +10,6 @@ export const router = Router();
 
 router.get("/", (req, res, next) => {
     res.render("login", { msg: null });
-    res.end();
 });
 
 router.post("/", (req: Request, res: Response, next: NextFunction) => {
@@ -30,7 +29,6 @@ router.post("/", (req: Request, res: Response, next: NextFunction) => {
         } else {
             res.redirect("login");
         }
-        res.end();
     });
 });
 
@@ -41,7 +39,6 @@ export function checkLogin(req: Request, res: Response, next: NextFunction) {
         //res.redirect('login?next=' + req.params.next);
         res.render('login', { msg: 'You need to be authenticated in order to access this' });
     }
-    res.end();
 }
 
 declare module 'express-session' {

@@ -54,23 +54,29 @@
             <br />
             <button
               id="start-btn"
-              class="btn btn-lg btn-secondary fw-bold border-white bg-white">
+              class="btn btn-lg btn-secondary fw-bold border-white bg-light">
               Load 'My Gallery'
             </button>
           </p>
         </div>
         <div class="learn-div" hidden>
           <div id="wrapper">
-            <div class="" id="terms" hidden>
+            <div class="align-content-center text-center" id="terms" hidden>
               <a
                 href="#"
                 type="button"
                 id="create-term-btn"
                 class="btn btn-sm btn-outline-success">
-                <span class="material-symbols-outlined gicon-btn">
-                  add
-                </span>
+                <span class="material-symbols-outlined gicon-btn"> add </span>
                 Add term
+              </a>
+              <a
+                href="#"
+                type="button"
+                id="rename-card-btn"
+                class="btn btn-sm btn-outline-primary">
+                <span class="material-symbols-outlined gicon-btn"> edit </span>
+                Rename card
               </a>
               <a
                 href="#"
@@ -82,11 +88,12 @@
                 </span>
                 Delete card
               </a>
+              <input type="text" id="cardRenameField" onkeypress="cardRenameFieldTyping(event);" class="form-control mt-3 w-75" style="margin: auto; opacity: 0;" hidden>
               <div class="wrap list-group w-auto terms"></div>
             </div>
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 cards">
               <div class="col">
-                <div class="card shadow-sm bg-light">
+                <div class="card shadow-sm text-bg-light">
                   <div class="card-body align-items-center">
                     <p class="card-text">New card</p>
                     <div class="justify-content-between align-items-center">
@@ -96,7 +103,6 @@
                           class="btn btn-sm btn-outline-success create-btn">
                           Create
                         </button>
-                        
                       </div>
                     </div>
                   </div>
@@ -136,6 +142,10 @@
           document.querySelector('.learn-div').hidden = false;
         }, 500);
       };
+
+      const renameCard = (el) => {
+        console.log(el.target);
+      }
 
       document.querySelector('.create-btn').onclick = () => {
         createCard({
@@ -189,8 +199,8 @@
 
       function createCard({
         name,
-        buttonName = 'Learn',
-        extraButtonName = 'Edit',
+        buttonName = '<span class="material-symbols-outlined gicon-btn"> school </span>',
+        extraButtonName = '<span class="material-symbols-outlined gicon-btn"> edit </span>',
         buttonType = 'secondary',
         extraButtonType = 'secondary',
         space = false,
@@ -206,7 +216,7 @@
         let extraNameProps = '';
         if (nameEditable) {
           extraNameProps =
-            'contentEditable = "true" style="background-color: #292d31;"';
+            'contentEditable = "true" style="background-color: #CCC;"';
         }
         console.log(card);
         let id = generateId(10);
@@ -227,11 +237,13 @@
         console.log(id);
         let el = `
         <div class="col" id="${id}">
-                <div class="card shadow-sm bg-light">
+                <div class="card shadow-sm text-bg-light">
                   <div class="card-body align-items-center">
                     <p class="card-text ${id}" ${extraNameProps}>
                       ${name}
+                      
                     </p>
+                    
                     <div
                       class="justify-content-between align-items-center"
                     >
@@ -290,11 +302,8 @@
       }
 
       function learn(cardId) {
-        setCardId(cardId);
-        console.log('learn');
-        // socket.emit('requestTerms', { cardId: card.id });
-        // document.querySelector('#terms').hidden = false;
-        // document.querySelector('.cards').hidden = true;
+        console.log('Opening card...');
+        window.location.href = '/card/' + cardId;
       }
 
       socket.on('loadTerm', ({ term }) => {
@@ -324,10 +333,6 @@
 
       document.querySelector('#create-term-btn').onclick = () => {
         if (getCardId()) {
-          // let term = createTerm({
-          //   term: 'hello',
-          //   definition: 'bonjour',
-          // });
           sendPkt('saveTerm', {
             term: 'hello',
             definition: 'bonjour',
@@ -344,6 +349,28 @@
         });
       };
 
+      document.querySelector('#rename-card-btn').onclick = (el) => {;
+        document.querySelector('#cardRenameField').hidden = false;
+        setTimeout(() => {
+          document.querySelector('#cardRenameField').style.opacity = 1;
+          document.querySelector('#cardRenameField').focus();
+        }, 1);
+        
+      };
+      
+      function cardRenameFieldTyping(event) {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          document.querySelector('#cardRenameField').style.opacity = 0;
+          let text = document.querySelector('#cardRenameField').value;
+          document.querySelector('#cardRenameField').value = 'Saving...'
+          setTimeout(() => {
+            document.querySelector('#cardRenameField').hidden = true;
+            sendPkt('renameCard', { cardId: getCardId(), name: text });
+          }, 300);
+        }
+      }
+
       socket.on('reloadCards', () => {
         window.location.reload();
       });
@@ -352,7 +379,7 @@
         el.style.animation = 'error-and-delete 1s ease 1';
         socket.emit('removeTerm', {
           termId: parseInt(el.querySelector('#termDiv').dataset.termid),
-          cardId: parseInt(el.querySelector('#termDiv').dataset.cardid)
+          cardId: parseInt(el.querySelector('#termDiv').dataset.cardid),
         });
         setTimeout(() => {
           el.remove(el);
@@ -401,6 +428,10 @@
         alert(msg);
       });
 
+      // const editCard = (el) => {
+      //   let cardDiv = 
+      // };
+
       const editTerm = (el) => {
         let mainElement = el.parentNode.parentNode;
         let termDiv = mainElement.querySelector('#termDiv');
@@ -409,7 +440,7 @@
             cardId: parseInt(termDiv.dataset.cardid),
             term: el.parentNode.querySelector('.term').innerText,
             definition: el.parentNode.querySelector('.definition').innerText,
-            termId: parseInt(termDiv.dataset.termid)
+            termId: parseInt(termDiv.dataset.termid),
           });
           mainElement.style.animation = 'success 1s ease 1';
           termDiv.querySelectorAll('p').forEach((cn) => {

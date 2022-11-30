@@ -1,6 +1,9 @@
 import { prisma } from './prisma.server';
 
 export async function createUserCard(title: string, name: string, cb: Function) {
+  if (!name) {
+    cb('Unexpected error (no userName provided)', null);
+  }
   let userExists = await prisma.user.findUnique({
     where: {
       name,
@@ -10,15 +13,15 @@ export async function createUserCard(title: string, name: string, cb: Function) 
     cb('Unexpected error', null);
     return;
   }
-  let cardExists = await prisma.card.findUnique({
-    where: {
-        name: title
-    }
-  });
-  if (cardExists) {
-    cb('This card already exists', null);
-    return;
-  }
+  // let cardExists = await prisma.card.findUnique({
+  //   where: {
+  //       id: title
+  //   }
+  // });
+  // if (cardExists) {
+  //   cb('This card already exists', null);
+  //   return;
+  // }
   let card = await prisma.card.create({
     data: {
       authorId: userExists.id,
@@ -115,7 +118,7 @@ export async function getCardTerms(cardId: number, cb: Function) {
     return;
   })*/;
   if (!cardExists) {
-    cb('Unexpected error (no such user)', null);
+    cb('Unexpected error (no such card)', null);
     return;
   }
   let terms = await prisma.term.findMany({
@@ -159,7 +162,7 @@ export async function removeCard(cardId: number) {
 export async function updateTerm(cardId: number, termId: number, term: string, definition: string, cb: Function) {
   console.log(termId);
   if (!termId || !cardId) {
-    cb('No termId | cardId were provided,', termId, cardId);
+    cb('No termId | cardId were provided');
     return;
   }
   
@@ -183,4 +186,33 @@ export async function updateTerm(cardId: number, termId: number, term: string, d
   });
   console.log(updated);
   
+}
+
+export async function updateCard(cardId: number, text: string, cb: Function) {
+  if (!text || text === '' || text === ' ') {
+    cb('Please provide a valid card name')
+    return;
+  }
+  if (!cardId) {
+    cb('Unexpected error (invalid or no cardid provided)')
+    return;
+  }
+  let cardExists = await prisma.card.findUnique({
+    where: {
+      id: cardId
+    }
+  });
+  if (!cardExists) {
+    cb('Unexpected error (no such card)');
+    return;
+  }
+  let updated = await prisma.card.update({
+    where: {
+      id: cardId
+    },
+    data: {
+      name: text
+    }
+  });
+  cb(null)
 }

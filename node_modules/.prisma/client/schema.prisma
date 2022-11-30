@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -11,7 +12,7 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
+  id       Int    @id @unique @default(autoincrement())
   email    String @unique
   name     String @unique
   password String
@@ -24,13 +25,15 @@ model User {
 }
 
 model UserPreferences {
-  id        Int @id @default(autoincrement())
-  pageScale Int @default(1)
+  id         Int @id @unique @default(autoincrement())
+  pageScale  Int @default(1)
+  colorTheme Int @default(0)
+  userId     Int
 }
 
 model Card {
-  id       Int    @id @default(autoincrement())
-  name     String @unique
+  id       Int    @id @unique @default(autoincrement())
+  name     String
   //author   User?  @relation(fields: [authorId], references: [id])
   authorId Int
   User     User?  @relation(fields: [userId], references: [id])

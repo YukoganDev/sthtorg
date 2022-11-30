@@ -5,5 +5,4 @@ export const router = Router();
 router.get("/", (req: Request, res: Response, next: NextFunction) => {
     req.session.user = undefined;
     res.redirect('/');
-    res.end();
 });
