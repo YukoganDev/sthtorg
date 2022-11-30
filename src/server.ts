@@ -1,5 +1,5 @@
 import createError from "http-errors";
-import express from "express";
+import express, { text } from "express";
 import { Application, Request, Response, NextFunction } from "express";
 import path from "path";
 import http from "http";
@@ -12,11 +12,12 @@ import { router as indexRouter } from "./routes/index";
 import { router as learnRouter } from "./routes/learn";
 import { router as loginRouter } from "./routes/login";
 import { router as logoutRouter } from "./routes/logout";
+import { router as cardRouter } from "./routes/card";
 import session, { Session } from "express-session";
 import { AccountResult, checkCredentials, createUser } from "./accountdb/user";
 import { User } from "@prisma/client";
 import { Handshake } from "socket.io/dist/socket";
-import { createUserCard, getUserCards, getCardTerms, createTerm, removeCardTerm, updateTerm, removeCard } from "./accountdb/cardManagement";
+import { createUserCard, getUserCards, getCardTerms, createTerm, removeCardTerm, updateTerm, removeCard, updateCard } from "./accountdb/cardManagement";
 
 const app: Application = express();
 const server: http.Server = http.createServer(app);
@@ -49,9 +50,10 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Routers
 app.use("/", indexRouter);
-app.use("/learn", learnRouter);
-app.use("/login", loginRouter);
-app.use("/logout", logoutRouter);
+// app.use("/learn", learnRouter);
+// app.use("/login", loginRouter);
+// app.use("/logout", logoutRouter);
+// app.use("/card", cardRouter);
 
 // WebSockets
 io.on('connect', (socket) => {
@@ -102,6 +104,16 @@ io.on('connect', (socket) => {
       }
     });
   });
+  socket.on('renameCard', ({ cardId, name }) => {
+    updateCard(cardId, name, (err: string) => {
+      if (err) {
+        console.error(err);
+        socket.emit('error', err);
+      }
+
+      socket.emit('reloadCards');
+    });
+  });
   socket.on('requestTerms', ({ cardId }) => {
     if (typeof cardId !== 'number') {
       console.log(cardId, 'is not a number (socket overload?)');
@@ -113,8 +125,9 @@ io.on('connect', (socket) => {
       if (err) {
         console.error(err);
         socket.emit('error', err);
+        return;
       }
-      
+
       for (let term of terms) {
         socket.emit('loadTerm', { term });
       }
@@ -138,7 +151,7 @@ io.on('connect', (socket) => {
 
 // Error handling
 app.use((req: Request, res: Response, next: NextFunction) => {
-  //next(createError(404));
+  next(createError(404));
 });
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   res.locals.message = err.message;

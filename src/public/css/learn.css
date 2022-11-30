@@ -193,6 +193,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   max-lines: 1;
+  transition: .3s;
 }
 .gicon-btn {
   vertical-align: middle;
@@ -209,6 +210,9 @@
 }
 .termItem:hover hr {
   width: 100%;
+}
+#cardRenameField {
+  transition: .3s;
 }
 .termItem {
   overflow: hidden;
