@@ -37,6 +37,10 @@ export async function createUserCard(title: string, name: string, cb: Function) 
 }
 
 export async function createTerm(term: string, definition: string, userName: string, cardId: number, cb: Function) {
+  if (!userName) {
+    cb('Unexpected error (no such user)', null);
+    return;
+  }
   let userExists = await prisma.user.findUnique({
     where: {
       name: userName
@@ -113,10 +117,7 @@ export async function getCardTerms(cardId: number, cb: Function) {
     where: {
       id: cardId
     }
-  })/*.catch((e) => {
-    console.log('Unexpected GET');
-    return;
-  })*/;
+  });
   if (!cardExists) {
     cb('Unexpected error (no such card)', null);
     return;
@@ -215,4 +216,45 @@ export async function updateCard(cardId: number, text: string, cb: Function) {
     }
   });
   cb(null)
+}
+export async function starTerm(id: number) {
+  let termExists = await prisma.term.findUnique({
+    where: {
+      id
+    }
+  });
+  if (!termExists) {
+    console.error('Unexpected problem : couldn\'t find term:', id);
+    return;
+  }
+  let starred = await prisma.term.update({
+    where: {
+      id
+    },
+    data: {
+      star: true
+    }
+  });
+  console.log('Starred', starred);
+}
+
+export async function unstarTerm(id: number) {
+  let termExists = await prisma.term.findUnique({
+    where: {
+      id
+    }
+  });
+  if (!termExists) {
+    console.error('Unexpected problem : couldn\'t find term:', id);
+    return;
+  }
+  let unstarred = await prisma.term.update({
+    where: {
+      id
+    },
+    data: {
+      star: false
+    }
+  });
+  console.log('Unstarred', unstarred);
 }

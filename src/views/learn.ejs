@@ -397,7 +397,7 @@
               class="list-group-item list-group-item-action d-flex gap-3 py-3 item fullwidth termItem"
               aria-current="true"
             >
-              <div class="d-flex gap-2 w-100 justify-content-between fullwidth">
+              <div class="d-flex gap-2 w-100 btn-group justify-content-between fullwidth">
                 <div style="word-wrap: break-word;" id="termDiv" data-cardId="${cardId}" data-termId="${id}">
                   <p class="mb-1 term" onfocus="selectText(this);" onkeypress="preventEnter(event);">
                     ${term}
@@ -408,14 +408,19 @@
                   </p>
                 </div>
               <div>
-                <button class="edit-btn" onclick="editTerm(this.parentNode);">
-                  <span class="material-symbols-outlined edit">
-                    edit
-                  </span>
-                </button>
-                <button class="delete-btn">
-                  <span class="material-symbols-outlined delete" onclick="removeTerm(this.parentNode.parentNode.parentNode.parentNode);"> delete </span>
-                </button>
+                <div class="btn-group-stht">
+                  <button class="edit-btn gicon-btn" onclick="editTerm(this.parentNode);">
+                    <span class="material-symbols-outlined edit">
+                      edit
+                    </span>
+                  </button>
+                  <button class="delete-btn gicon-btn">
+                    <span class="material-symbols-outlined delete" onclick="removeTerm(this.parentNode.parentNode.parentNode.parentNode);"> delete </span>
+                  </button>
+                  <button class="star-btn gicon-btn">
+                    <span class="material-symbols-outlined star" onclick="starTerm(this.parentNode.parentNode.parentNode.parentNode);"> star </span>
+                  </button>
+                  </div>
                 </div>
               </div>
             </a>

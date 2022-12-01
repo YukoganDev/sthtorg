@@ -46,4 +46,5 @@ model Term {
   definition String
   cardId     Int
   authorId   Int?
+  star       Boolean @default(false)
 }
