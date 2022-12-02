@@ -18,7 +18,6 @@
       crossorigin="anonymous"
       defer
     ></script>
-    <script src="js/index.js" defer></script>
     <title>Document</title>
     <!-- Added Stylesheets -->
     <link href="./css/index.css" rel="stylesheet" />
@@ -64,21 +63,13 @@
         <p>&copy; Stht Studios 2022</p>
       </footer>
     </div>
+    <div id="user" data-user="<%=user%>"></div>
+
     <script type="module">
       import { io } from "https://cdn.socket.io/4.4.1/socket.io.esm.min.js";
 
       const socket = io();
     </script>
-    <script>
-      const loginBtn = document.querySelector("#login-btn");
-      let user = "<%=user%>";
-      console.log(`Logged in as ${user}`);
-      if (user) {
-        loginBtn.innerHTML = `Logout (${user})`;
-        loginBtn.href = "/logout";
-      } else {
-        loginBtn.innerHTML = `Login`;
-      }
-    </script>
+    <script src="/js/index.js" defer></script>
   </body>
 </html>

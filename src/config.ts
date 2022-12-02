@@ -16,5 +16,5 @@ export const config: SthtConfig = {
     SESSION_SECRET: '9utv93p18491tvuqxb941',
 
     //
-    DEV_MODE: false
+    DEV_MODE: true
 }

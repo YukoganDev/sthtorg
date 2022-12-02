@@ -247,7 +247,7 @@
         qf.innerHTML = `<br />`;
         qi.value = '';
         if (newQs.length <= 0) {
-          qt.innerHTML = `No bads! Well studied.`;
+          qt.innerHTML = `Done. No bads!`;
           qi.disabled = true;
         } else {
           qt.innerHTML = `Round <b>${round}</b> complete, made <b>${count}</b> bads. Press any key to continue`;
@@ -282,7 +282,10 @@
           currentQuestion = questionsToGo[random];
           console.log(currentQuestion);
           if (!questions[0]) {
-            qt.innerText = 'Unknown card';
+            qt.innerHTML = '<p style="color: red;">Unknown or empty card. Retrying in 5 seconds...</p>';
+            setTimeout(() => {
+              window.location.reload();
+            }, 5000);
             return;
           }
           qt.innerText = currentQuestion.text;
