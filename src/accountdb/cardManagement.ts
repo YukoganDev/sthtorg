@@ -218,6 +218,10 @@ export async function updateCard(cardId: number, text: string, cb: Function) {
   cb(null)
 }
 export async function starTerm(id: number) {
+  if (!id) {
+    console.error('Unexpected problem : no id provided');
+    return;
+  }
   let termExists = await prisma.term.findUnique({
     where: {
       id
@@ -239,6 +243,10 @@ export async function starTerm(id: number) {
 }
 
 export async function unstarTerm(id: number) {
+  if (!id) {
+    console.error('Unexpected problem : no id provided');
+    return;
+  }
   let termExists = await prisma.term.findUnique({
     where: {
       id

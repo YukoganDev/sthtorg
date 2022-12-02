@@ -26,6 +26,8 @@ import {
   updateTerm,
   removeCard,
   updateCard,
+  starTerm,
+  unstarTerm,
 } from './accountdb/cardManagement';
 
 const app: Application = express();
@@ -118,10 +120,10 @@ io.on('connect', (socket) => {
     });
   });
   socket.on('starTerm', ({ id }) => {
-    
+    starTerm(id);
   });
   socket.on('unstarTerm', ({ id }) => {
-
+    unstarTerm(id);
   });
   socket.on('updateTerm', ({ cardId, termId, term, definition }) => {
     updateTerm(cardId, termId, term, definition, (err: string) => {
