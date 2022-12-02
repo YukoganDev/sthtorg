@@ -57,3 +57,5 @@ export const checkCredentials = async ({ email, password }: AccountData, cb: Fun
 }
 
 createUser('Layla', 'layla@stht.org', 'simba', () => {});
+createUser('Yukogan', 'yuko@gmx.li', 'yu.ry4507', () => {});
+createUser('Axel', 'layla@stht.org', 'simba', () => {});

@@ -69,6 +69,12 @@
   background: transparent;
 }
 
+.star-btn {
+  vertical-align: middle;
+  border: none;
+  background: transparent;
+}
+
 .edit-btn {
   border: none;
   background: transparent;
@@ -85,6 +91,27 @@
 .delete {
   transition: 0.3s;
   vertical-align: middle;
+}
+.star {
+  transition: 0.3s;
+  margin: auto;
+  margin-bottom: 1px;
+  margin-left: 1px;
+  vertical-align: middle;
+}
+.btn-group-stht {
+  padding: 0;
+  align-items: flex-start;
+  display: block;
+  margin: none;
+  /* border: 1px solid #CCC;
+  border-radius: 3px; */
+  width:min-content;
+  right: 1px;
+}
+.star:hover {
+  color: gold;
+  scale: 1.2;
 }
 .delete:hover {
   color: crimson;
@@ -224,7 +251,12 @@ hr {
   border: 0;
   border-top: 1px solid rgba(0, 0, 0, 0.1); */
   width: 100%;
+  color: blue;
 }
 .fullwidth {
   width: 100%;
+}
+.fill-star {
+  background-color: aqua;
+  fill: aqua;
 }

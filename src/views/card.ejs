@@ -60,7 +60,7 @@
     #qi {
       transition: 0.3s;
       border-radius: 5px;
-      height: 4vh;
+      height: 40px;
       border: 2px solid rgb(202, 165, 0);
     }
     #qi:focus {
@@ -78,14 +78,48 @@
     }
 
     .gicon-btn {
-        justify-content: center;
+      vertical-align: middle;
     }
+
+    @keyframes shake {
+      10%,
+      90% {
+        transform: translate3d(-1px, 0, 0);
+      }
+
+      20%,
+      80% {
+        transform: translate3d(2px, 0, 0);
+      }
+
+      30%,
+      50%,
+      70% {
+        transform: translate3d(-4px, 0, 0);
+      }
+
+      40%,
+      60% {
+        transform: translate3d(4px, 0, 0);
+      }
+    }
+
+    .back-btn {
+      position: absolute;
+      margin: 1vw;
+
+      left: 1vw;
+      top: 2vh;
+    }
+    
   </style>
   <body class="text-center bg-warning">
     <main class="form-signin w-100 m-auto">
+      <a href="/learn" class="btn btn-outline-secondary back-btn">Go back</a>
       <form>
         <div id="qc">
-          <h1 class="h4 mb-3 fw-normal text-muted">Loading</h1>
+          <h1 class="h5 mb-3 fw-normal text-black-50" id="qf"><br /></h1>
+          <h1 class="h4 mb-3 fw-normal text-muted" id="qq">Loading...</h1>
         </div>
 
         <div class="">
@@ -106,54 +140,169 @@
       const socket = io();
 
       const qc = document.querySelector('#qc');
-      const qt = qc.querySelector('h1');
+      const qt = qc.querySelector('#qq');
+      const qf = qc.querySelector('#qf');
       const qb = document.querySelector('#qb');
       const qi = document.querySelector('#qi');
 
       const inputChangeAnimationTime = 30;
 
-      let questions = [
-      ];
+      let questions = [];
+      let questionsToGo = [];
+      let currentQuestion = null;
+      let round = 1;
+      let ended = false;
 
-      let currentQId = 0;
+      let canContinue = true;
 
-      let canContinue = false;
       qi.onkeypress = (event) => {
+        checkIfWrong();
         if (event.key === 'Enter') {
           event.preventDefault();
-          if (qi.value === questions[currentQId].answer) {
-            canContinue = true;
-            qi.classList.remove('incorrect');
-            qi.classList.add('correct');
-          } else {
-            canContinue = false;
-            qi.classList.remove('correct');
-            qi.classList.add('incorrect');
-            qt.innerHTML = `Oops! Type \'<b>${questions[currentQId].answer}</b>\'`;
-          }
-          if (canContinue) {
-            nextQuestion();
-          }
+          check();
         }
       };
 
-      let prevVal = 0;
+      qb.onclick = () => {
+        check();
+      };
 
-      function nextQuestion() {
-        let random = Math.floor(Math.random() * questions.length);
-        currentQId = random;
-        if (!questions[0]) { qt.innerText = 'Unknown card'; return; } 
-        qt.innerText = questions[random].text;
-        console.log(currentQId, prevVal);
-        if (currentQId === prevVal) { nextQuestion(); }
-        prevVal = currentQId;
+      function checkIfWrong() {
+        if (ended) {
+            ended = false;
+          nextQuestion(true);
+        }
+        if (!canContinue) {
+          setTimeout(() => {
+            if (!currentQuestion) {
+              check();
+              return;
+            }
+            if (qi.value === currentQuestion.answer) {
+              qi.disabled = true;
+              setTimeout(() => {
+                check();
+                qi.disabled = false;
+              }, 800);
+            }
+          }, 0);
+        }
+      }
+
+      function check() {
+        qi.style.animation = '';
+        if (!currentQuestion) {
+          nextQuestion();
+          return;
+        }
+        if (qi.value === currentQuestion.answer) {
+          qf.innerHTML = 'Correct';
+          canContinue = true;
+          qi.classList.remove('incorrect');
+          qi.classList.add('correct');
+          qt.innerHTML += '<br />';
+          if (questionsToGo.length <= 0) {
+            console.log('ending...');
+            end();
+            return;
+          }
+        } else {
+          qf.innerHTML = 'Oops!';
+          canContinue = false;
+          qi.classList.remove('correct');
+          qi.classList.add('incorrect');
+          qt.innerHTML = `Type: <br />\'<b>${currentQuestion.answer}</b>\'`;
+          let q = questions.find((cq) => cq.id === currentQuestion.id);
+          if (q) {
+            q.wrong = true;
+            console.log(questions, 'addsad');
+          }
+        }
+        if (shouldContinue()) {
+          nextQuestion();
+        } else {
+          qi.style.animation = 'shake .5s ease 1';
+          currentQuestion.wrong = true;
+        }
+
+        setTimeout(() => {
+          qi.select();
+        }, 0);
+      }
+
+      function end() {
+        ended = true;
+        canContinue = false;
+        let count = 0;
+        let newQs = [];
+        for (let q of questions) {
+          if (q.wrong) {
+            count++;
+            q.wrong = false;
+            newQs.push(q);
+            questions.push(q);
+            questionsToGo.push(q);
+          }
+        }
+        qf.innerHTML = `<br />`;
+        if (newQs.length <= 0) {
+          qt.innerHTML = `No bads! Well studied.`;
+        } else {
+          qt.innerHTML = `Round <b>${round}</b> complete, made <b>${count}</b> bads. Press any key to continue`;
+          // questions = newQs;
+          // questionsToGo = newQs;
+          currentQuestion = null;
+          round++;
+          canContinue = true;
+          setTimeout(() => {
+            qi.select();
+          }, 0);
+          //nextQuestion();
+        }
+        console.log(newQs, '-> New array');
+      }
+      function shouldContinue() {
+        return canContinue;
+      }
+
+      function nextQuestion(reset) {
+        if (reset) {
+          canContinue = false;
+          setTimeout(() => {
+            canContinue = true;
+          }, 0);
+        }
+        if (!canContinue) {
+          return;
+        }
+        console.log(questionsToGo, questionsToGo.length);
+        let random = Math.floor(Math.random() * (questionsToGo.length - 1));
+        currentQuestion = questionsToGo[random];
+        console.log(currentQuestion);
+        if (!questions[0]) {
+          qt.innerText = 'Unknown card';
+          return;
+        }
+        qt.innerText = currentQuestion.text;
+        questionsToGo.splice(random, 1);
       }
       console.log(window.location.pathname);
       socket.emit('requestTerms', { cardId: parseInt('<%=cardId%>') });
 
       socket.on('loadTerm', ({ term }) => {
         console.log('Got', term);
-        questions.push({ text: term.term, answer: term.definition });
+        questions.push({
+          text: term.term,
+          answer: term.definition,
+          id: term.id,
+          wrong: false,
+        });
+        questionsToGo.push({
+          text: term.term,
+          answer: term.definition,
+          id: term.id,
+          wrong: false,
+        });
       });
 
       let i = 0;
@@ -161,12 +310,15 @@
       let dots = '';
       let a = setInterval(() => {
         i++;
-        if (i > imax) { i = 0; dots = ''; }
+        if (i > imax) {
+          i = 0;
+          dots = '';
+        }
         for (let j = 0; j < i; j++) {
-            dots += '.';
+          dots += '.';
         }
         qt.innerText = 'Waiting for card data' + dots;
-      }, 500);
+      }, 300);
 
       setTimeout(() => {
         clearInterval(a);
