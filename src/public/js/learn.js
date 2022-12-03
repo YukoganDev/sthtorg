@@ -17,7 +17,7 @@ document.getElementById('start-btn').onclick = () => {
 
 function loadCards() {
   document.querySelector('#start-btn').innerHTML =
-    '<span class="material-symbols-outlined"> cached </span>';
+    '<div class="loader loader-fixed"></div>';
   setTimeout(() => {
     document.querySelector('.info-div').hidden = true;
     document.querySelector('.learn-div').hidden = false;
@@ -27,6 +27,19 @@ function loadCards() {
 const renameCard = (el) => {
   console.log(el.target);
 };
+
+const addLoadingCard = (el) => {
+  let card = createCard({
+    name: '<div class="loader"></div>',
+    buttonActions: (id) => {
+
+    },
+    extraButtonActions: (id) => {
+
+    }
+  });
+  card.querySelector('button').parentNode.remove();
+}
 
 document.querySelector('.create-btn').onclick = () => {
   createCard({
@@ -47,6 +60,7 @@ document.querySelector('.create-btn').onclick = () => {
       sendPkt('saveCard', {
         name: document.getElementById(id).querySelector('.card-text').innerText,
       });
+      addLoadingCard();
       document.getElementById(id).remove();
     },
   });
@@ -124,7 +138,7 @@ function createCard({
                     <div
                       class="justify-content-between align-items-center"
                     >
-                      <div class="${btnGroup} align-self-end">
+                      <div class="${btnGroup} align-self-end align-items-center">
                         <button
                           type="button"
                           onclick="${buttonAction}"
@@ -152,6 +166,7 @@ function createCard({
     node.focus();
     selectText(node);
   }
+  return document.getElementById(id);
 }
 
 let currentCardId;

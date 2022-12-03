@@ -19,7 +19,9 @@ router.get("/learn", checkLogin, (req, res, next) => {
 
 // Login
 router.get("/login", (req, res, next) => {
-    res.render(`${routerViewPrefix}login`, { msg: null });
+    checkLogin(req, res, () => {
+        res.redirect('/');
+    });
 });
 
 router.post("/login", (req: Request, res: Response, next: NextFunction) => {

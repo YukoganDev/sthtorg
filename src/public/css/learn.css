@@ -167,7 +167,42 @@
 }
 #start-btn span {
   translate: 0 15%;
-  animation: spin 1s infinite ease;
+}
+.loader-parent {
+  vertical-align: middle;
+  justify-items: center;
+  text-align: center;
+}
+
+.loader {
+  border: 4px solid #f3f3f3;
+  align-self: center;
+
+  margin-left: 43%;
+  margin-top: 8px;
+  border-radius: 50%;
+  border-top: 4px solid #ffd000;
+  width: 35px;
+  height: 35px;
+  -webkit-animation: spin .7s ease-in-out infinite; /* Safari */
+  animation: spin .7s ease-in-out infinite;
+}
+.loader-fixed {
+  margin: 0;
+}
+@-webkit-keyframes spin {
+  0% {
+    rotate: 0deg;
+    scale: 1;
+  }
+  50% {
+    scale: 1.2;
+  }
+  100% {
+
+    rotate: 359deg;
+    scale: 1;
+  }
 }
 @keyframes spin {
   0% {
@@ -178,6 +213,7 @@
     scale: 1.2;
   }
   100% {
+
     rotate: 359deg;
     scale: 1;
   }
