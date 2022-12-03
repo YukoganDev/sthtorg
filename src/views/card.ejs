@@ -110,11 +110,36 @@
 
       left: 1vw;
       top: 2vh;
+
+      vertical-align: middle;
+    }
+    .share-btn {
+      position: absolute;
+      margin: 1vw;
+      vertical-align: middle;
+
+      margin-left: 1px;
+      right: 1vw;
+      top: 2vh;
+      height: 45px;
+
+      color: #727272;
+    }
+    .btn {
+      transition: .5s;
+    }
+    .btn:hover {
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+
     }
   </style>
   <body class="text-center bg-warning">
     <main class="form-signin w-100 m-auto">
-      <a href="/learn?fastload=1" class="btn btn-outline-secondary back-btn">Go back</a>
+      <div class="">
+        <a href="/learn?fastload=1" class="btn btn-outline-secondary back-btn">Go back</a>
+        <button href="/learn?fastload=1" class="btn btn-outline-info share-btn"><span class="material-symbols-outlined gicon-btn">share</span> Share card</button>
+      </div>
+      
       <form>
         <div id="qc">
           <h1 class="h5 mb-3 fw-normal text-black-50" id="qf"><br /></h1>
@@ -134,221 +159,10 @@
         <p class="mt-5 mb-3 text-muted">&copy; Stht Studios 2022</p>
       </form>
     </main>
+
+    <div id="cardid" data-cardid="<%=cardid%>"></div>
+    <div id="user" data-user="<%=user%>"></div>
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-    <script defer>
-      const socket = io();
-
-      const qc = document.querySelector('#qc');
-      const qt = qc.querySelector('#qq');
-      const qf = qc.querySelector('#qf');
-      const qb = document.querySelector('#qb');
-      const qi = document.querySelector('#qi');
-
-      const inputChangeAnimationTime = 30;
-
-      let questions = [];
-      let questionsToGo = [];
-      let currentQuestion = null;
-      let round = 1;
-      let ended = false;
-
-      let canContinue = true;
-
-      qi.onkeypress = (event) => {
-        checkIfWrong();
-        if (event.key === 'Enter') {
-          event.preventDefault();
-          check();
-        }
-      };
-
-      qb.onclick = () => {
-        check();
-      };
-
-      function checkIfWrong() {
-        if (ended) {
-          ended = false;
-          nextQuestion(true);
-        }
-        if (!canContinue) {
-          setTimeout(() => {
-            if (!currentQuestion) {
-              check();
-              return;
-            }
-            if (qi.value === currentQuestion.answer) {
-              qi.disabled = true;
-              setTimeout(() => {
-                check();
-                qi.disabled = false;
-              }, 800);
-            }
-          }, 0);
-        }
-      }
-
-      function check() {
-        qi.style.animation = '';
-        if (!currentQuestion) {
-          nextQuestion();
-          return;
-        }
-        if (qi.value === currentQuestion.answer) {
-          qf.innerHTML = 'Correct';
-          canContinue = true;
-          qi.classList.remove('incorrect');
-          qi.classList.add('correct');
-          qt.innerHTML += '<br />';
-          if (questionsToGo.length <= 0) {
-            console.log('ending...');
-            end();
-            return;
-          }
-        } else {
-          qf.innerHTML = 'Oops!';
-          canContinue = false;
-          qi.classList.remove('correct');
-          qi.classList.add('incorrect');
-          qt.innerHTML = `Type: <br />\'<b>${currentQuestion.answer}</b>\'`;
-          let q = questions.find((cq) => cq.id === currentQuestion.id);
-          if (q) {
-            q.wrong = true;
-            console.log(questions, 'addsad');
-          }
-        }
-        if (shouldContinue()) {
-          nextQuestion();
-        } else {
-          qi.style.animation = 'shake .5s ease 1';
-          currentQuestion.wrong = true;
-        }
-
-        setTimeout(() => {
-          qi.select();
-        }, 0);
-      }
-
-      function end() {
-        ended = true;
-        canContinue = false;
-        let count = 0;
-        let newQs = [];
-        for (let q of questions) {
-          if (q.wrong) {
-            count++;
-            q.wrong = false;
-            newQs.push(q);
-            questions.push(q);
-            questionsToGo.push(q);
-          }
-        }
-        console.log(questions);
-        qf.innerHTML = `<br />`;
-        qi.value = '';
-        if (newQs.length <= 0) {
-          qt.innerHTML = `Done. No bads!`;
-          qi.disabled = true;
-        } else {
-          qt.innerHTML = `Round <b>${round}</b> complete, made <b>${count}</b> bads. Press any key to continue`;
-          // questions = newQs;
-          // questionsToGo = newQs;
-          currentQuestion = null;
-          round++;
-          canContinue = true;
-          setTimeout(() => {
-            qi.select();
-          }, 0);
-          //nextQuestion();
-        }
-        console.log(newQs, '-> New array');
-      }
-      function shouldContinue() {
-        return canContinue;
-      }
-
-      function nextQuestion(reset) {
-          if (reset) {
-            canContinue = false;
-            setTimeout(() => {
-              canContinue = true;
-            }, 0);
-          }
-          if (!canContinue) {
-            return;
-          }
-          console.log(questionsToGo, questionsToGo.length);
-          let random = Math.floor(Math.random() * (questionsToGo.length - 1));
-          currentQuestion = questionsToGo[random];
-          console.log(currentQuestion);
-          if (!questions[0]) {
-            qt.innerHTML = '<p style="color: red;">Unknown or empty card. Retrying in 5 seconds...</p>';
-            setTimeout(() => {
-              window.location.reload();
-            }, 5000);
-            return;
-          }
-          qt.innerText = currentQuestion.text;
-          questionsToGo.splice(random, 1);
-      }
-      socket.emit('requestTerms', { cardId: parseInt('<%=cardId%>') });
-
-      socket.on('loadTerm', ({ term }) => {
-        console.log('Got', term);
-        questions.push({
-          text: term.term,
-          answer: term.definition,
-          id: term.id,
-          starred: term.star,
-          wrong: false,
-        });
-        questionsToGo.push({
-          text: term.term,
-          answer: term.definition,
-          id: term.id,
-          starred: term.star,
-          wrong: false,
-        });
-      });
-
-      let i = 0;
-      let imax = 3;
-      let dots = '';
-      let a = setInterval(() => {
-        i++;
-        if (i > imax) {
-          i = 0;
-          dots = '';
-        }
-        for (let j = 0; j < i; j++) {
-          dots += '.';
-        }
-        qt.innerText = 'Waiting for card data' + dots;
-      }, 300);
-
-      function parseTerms() {
-        let starredArr = [];
-        for (let q of questions) {
-          if (q.starred) {
-            starredArr.push(q);
-          }
-        }
-        console.log(starredArr);
-        if (starredArr.length > 0) {
-          questions = [];
-          questionsToGo = [];
-          for (let q of starredArr) {
-            questions.push(q);
-            questionsToGo.push(q);
-          }
-        }
-      }
-
-      setTimeout(() => {
-        clearInterval(a);
-        parseTerms();
-        nextQuestion();
-      }, 1000);
-    </script>
+    <script src="/js/card.js" defer></script>
   </body>
 </html>
