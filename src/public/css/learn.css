@@ -242,6 +242,7 @@
 }
 .termItem:hover hr {
   width: 100%;
+
 }
 #cardRenameField {
   transition: .3s;

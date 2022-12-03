@@ -68,5 +68,5 @@ router.get("/logout", (req: Request, res: Response, next: NextFunction) => {
 
 // Card
 router.get("/card/:cardId", (req, res, next) => {
-    res.render(`${routerViewPrefix}card`, { user: req.session.user || null, cardId: req.params.cardId || null });
+    res.render(`${routerViewPrefix}card`, { user: req.session.user || null, cardid: req.params.cardId || null });
 });
