@@ -32,22 +32,27 @@ import {
   unstarTerm,
 } from './accountdb/cardManagement';
 
-//const privateKey = fs.readFileSync('/etc/letsencrypt/live/stht.org/privkey.pem', 'utf8');
-//const certificate = fs.readFileSync('/etc/letsencrypt/live/stht.org/cert.pem', 'utf8');
-//const ca = fs.readFileSync('/etc/letsencrypt/live/stht.org/chain.pem', 'utf8');
+const privateKey = fs.readFileSync(
+  '/etc/letsencrypt/live/stht.org/privkey.pem',
+  'utf8'
+);
+const certificate = fs.readFileSync(
+  '/etc/letsencrypt/live/stht.org/cert.pem',
+  'utf8'
+);
+const ca = fs.readFileSync('/etc/letsencrypt/live/stht.org/chain.pem', 'utf8');
 
-// const credentials = {
-// 		key: privateKey,
-// 			cert: certificate,
-// 				ca: ca
-// };
+const credentials = {
+  key: privateKey,
+  cert: certificate,
+  ca: ca,
+};
 
 const app: Application = express();
 const httpServer: http.Server = http.createServer(app);
-//const httpsServer: https.Server = https.createServer(credentials, app); 
+const httpsServer: https.Server = https.createServer(credentials, app);
 
-
-const io: Server = new Server(httpServer);
+const io: Server = new Server(httpsServer);
 
 interface Socket {
   on: (event: string, callback: (data: any) => void) => void;
@@ -100,8 +105,8 @@ io.on('connect', (socket) => {
       console.log(name, handshake.session.user);
       createUserCard(name, handshake.session.user, (err: string, card: any) => {
         if (handleSocketError(socket, err)) {
-        return;
-      }
+          return;
+        }
         socket.emit('loadCard', { card });
       });
     }
@@ -119,8 +124,8 @@ io.on('connect', (socket) => {
       cardId,
       (err: string, term: any) => {
         if (handleSocketError(socket, err)) {
-        return;
-      }
+          return;
+        }
         if (term) {
           socket.emit('loadTerm', { term });
         }
@@ -204,6 +209,6 @@ httpServer.listen(config.PORT, () => {
   console.log(`Server running on port ${config.PORT}`);
 });
 
-// httpsServer.listen(443, () => {
-// 	console.log('Also started https server');
-// });
+httpsServer.listen(443, () => {
+  console.log('Also started https server');
+});
