@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', (aa) => {
   const qf = qc.querySelector('#qf');
   const qb = document.querySelector('#qb');
   const qi = document.querySelector('#qi');
+  const sb = document.querySelector('#sb');
 
   const inputChangeAnimationTime = 30;
 
@@ -28,6 +29,20 @@ document.addEventListener('DOMContentLoaded', (aa) => {
   qb.onclick = () => {
     check();
   };
+
+  let canUpdateText = true;
+  sb.onclick = () => {
+    navigator.clipboard.writeText(window.location.href);
+    if (canUpdateText) {
+        canUpdateText = false;
+        let prevHTML = sb.innerHTML;
+        sb.innerText = 'Copied to clipboard!';
+        setTimeout(() => {
+            sb.innerHTML = prevHTML;
+            canUpdateText = true;
+        }, 3000);
+    }
+  }
 
   function checkIfWrong() {
     if (ended) {
@@ -223,9 +238,11 @@ document.addEventListener('DOMContentLoaded', (aa) => {
   }
 
   setTimeout(() => {
-    clearInterval(a);
-    parseTerms();
-    nextQuestion();
-    console.log('No DOM errors');
+    window.requestAnimationFrame(() => {
+        clearInterval(a);
+        parseTerms();
+        nextQuestion();
+        console.log('No DOM errors');
+    });
   }, 1000);
 });
