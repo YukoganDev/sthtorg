@@ -7,7 +7,7 @@ export type SthtConfig = {
 
 export const config: SthtConfig = {
     //
-    PORT: 8080,
+    PORT: 80,
 
     //
     VERBOSE: true,

@@ -6,9 +6,6 @@ import { config } from "../config";
 export const router = Router();
 
 let routerViewPrefix = '';
-if (!config.DEV_MODE) {
-    routerViewPrefix = 'obf/';
-}
 
 // Index
 router.get("/", (req, res, next) => {
