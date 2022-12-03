@@ -3,6 +3,8 @@ import express, { text } from 'express';
 import { Application, Request, Response, NextFunction } from 'express';
 import path from 'path';
 import http from 'http';
+import https from 'node:https';
+import fs from 'node:fs';
 import cookieParser from 'cookie-parser';
 import { Server } from 'socket.io';
 
@@ -30,8 +32,24 @@ import {
   unstarTerm,
 } from './accountdb/cardManagement';
 
+try {
+const sslOptions = {
+  key: fs.readFileSync('../keys/key.pem'),
+  cert: fs.readFileSync('../keys/cert.pem'),
+};
+} catch (e) {
+  console.log('Error while loading keys');
+}
+
+
+
 const app: Application = express();
-const server: http.Server = http.createServer(app);
+let server: any = http.createServer(app);
+if (!config.DEV_MODE) {
+  server = https.createServer(app);
+}
+
+
 const io: Server = new Server(server);
 
 interface Socket {
