@@ -138,6 +138,15 @@ export async function getCardTerms(cardId: number, cb: Function) {
 }
 
 export async function removeCardTerm(cardId: number, termId: number, cb: Function) {
+  let termExists = await prisma.term.findUnique({
+    where: {
+      id: termId
+    }
+  });
+  if (!termExists) {
+    console.log('Unknown term (double remove req?)');
+    return;
+  }
   await prisma.term.deleteMany({
     where: {
       id: termId,
@@ -146,6 +155,15 @@ export async function removeCardTerm(cardId: number, termId: number, cb: Functio
   });
 }
 export async function removeCard(cardId: number) {
+  let cardExists = await prisma.card.findUnique({
+    where: {
+      id: cardId
+    }
+  });
+  if (!cardExists) {
+    console.log('Unknown card (double remove req?)');
+    return;
+  }
   await prisma.term.deleteMany({
     where: {
       cardId
@@ -218,6 +236,10 @@ export async function updateCard(cardId: number, text: string, cb: Function) {
   cb(null)
 }
 export async function starTerm(id: number) {
+  if (!id) {
+    console.error('Unexpected problem : no id provided');
+    return;
+  }
   let termExists = await prisma.term.findUnique({
     where: {
       id
@@ -239,6 +261,10 @@ export async function starTerm(id: number) {
 }
 
 export async function unstarTerm(id: number) {
+  if (!id) {
+    console.error('Unexpected problem : no id provided');
+    return;
+  }
   let termExists = await prisma.term.findUnique({
     where: {
       id

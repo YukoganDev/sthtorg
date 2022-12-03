@@ -111,11 +111,10 @@
       left: 1vw;
       top: 2vh;
     }
-    
   </style>
   <body class="text-center bg-warning">
     <main class="form-signin w-100 m-auto">
-      <a href="/learn" class="btn btn-outline-secondary back-btn">Go back</a>
+      <a href="/learn?fastload=1" class="btn btn-outline-secondary back-btn">Go back</a>
       <form>
         <div id="qc">
           <h1 class="h5 mb-3 fw-normal text-black-50" id="qf"><br /></h1>
@@ -169,7 +168,7 @@
 
       function checkIfWrong() {
         if (ended) {
-            ended = false;
+          ended = false;
           nextQuestion(true);
         }
         if (!canContinue) {
@@ -244,9 +243,12 @@
             questionsToGo.push(q);
           }
         }
+        console.log(questions);
         qf.innerHTML = `<br />`;
+        qi.value = '';
         if (newQs.length <= 0) {
-          qt.innerHTML = `No bads! Well studied.`;
+          qt.innerHTML = `Done. No bads!`;
+          qi.disabled = true;
         } else {
           qt.innerHTML = `Round <b>${round}</b> complete, made <b>${count}</b> bads. Press any key to continue`;
           // questions = newQs;
@@ -266,27 +268,29 @@
       }
 
       function nextQuestion(reset) {
-        if (reset) {
-          canContinue = false;
-          setTimeout(() => {
-            canContinue = true;
-          }, 0);
-        }
-        if (!canContinue) {
-          return;
-        }
-        console.log(questionsToGo, questionsToGo.length);
-        let random = Math.floor(Math.random() * (questionsToGo.length - 1));
-        currentQuestion = questionsToGo[random];
-        console.log(currentQuestion);
-        if (!questions[0]) {
-          qt.innerText = 'Unknown card';
-          return;
-        }
-        qt.innerText = currentQuestion.text;
-        questionsToGo.splice(random, 1);
+          if (reset) {
+            canContinue = false;
+            setTimeout(() => {
+              canContinue = true;
+            }, 0);
+          }
+          if (!canContinue) {
+            return;
+          }
+          console.log(questionsToGo, questionsToGo.length);
+          let random = Math.floor(Math.random() * (questionsToGo.length - 1));
+          currentQuestion = questionsToGo[random];
+          console.log(currentQuestion);
+          if (!questions[0]) {
+            qt.innerHTML = '<p style="color: red;">Unknown or empty card. Retrying in 5 seconds...</p>';
+            setTimeout(() => {
+              window.location.reload();
+            }, 5000);
+            return;
+          }
+          qt.innerText = currentQuestion.text;
+          questionsToGo.splice(random, 1);
       }
-      console.log(window.location.pathname);
       socket.emit('requestTerms', { cardId: parseInt('<%=cardId%>') });
 
       socket.on('loadTerm', ({ term }) => {
@@ -295,12 +299,14 @@
           text: term.term,
           answer: term.definition,
           id: term.id,
+          starred: term.star,
           wrong: false,
         });
         questionsToGo.push({
           text: term.term,
           answer: term.definition,
           id: term.id,
+          starred: term.star,
           wrong: false,
         });
       });
@@ -320,8 +326,27 @@
         qt.innerText = 'Waiting for card data' + dots;
       }, 300);
 
+      function parseTerms() {
+        let starredArr = [];
+        for (let q of questions) {
+          if (q.starred) {
+            starredArr.push(q);
+          }
+        }
+        console.log(starredArr);
+        if (starredArr.length > 0) {
+          questions = [];
+          questionsToGo = [];
+          for (let q of starredArr) {
+            questions.push(q);
+            questionsToGo.push(q);
+          }
+        }
+      }
+
       setTimeout(() => {
         clearInterval(a);
+        parseTerms();
         nextQuestion();
       }, 1000);
     </script>

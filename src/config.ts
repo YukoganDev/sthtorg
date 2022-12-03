@@ -2,6 +2,7 @@ export type SthtConfig = {
     PORT: number,
     VERBOSE: boolean,
     SESSION_SECRET: string,
+    DEV_MODE: boolean
 }
 
 export const config: SthtConfig = {
@@ -12,5 +13,8 @@ export const config: SthtConfig = {
     VERBOSE: true,
 
     //
-    SESSION_SECRET: '9utv93p18491tvuqxb941'
+    SESSION_SECRET: '9utv93p18491tvuqxb941',
+
+    //
+    DEV_MODE: true
 }
