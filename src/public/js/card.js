@@ -34,15 +34,15 @@ document.addEventListener('DOMContentLoaded', (aa) => {
   sb.onclick = () => {
     navigator.clipboard.writeText(window.location.href);
     if (canUpdateText) {
-        canUpdateText = false;
-        let prevHTML = sb.innerHTML;
-        sb.innerText = 'Copied to clipboard!';
-        setTimeout(() => {
-            sb.innerHTML = prevHTML;
-            canUpdateText = true;
-        }, 3000);
+      canUpdateText = false;
+      let prevHTML = sb.innerHTML;
+      sb.innerText = 'Copied to clipboard!';
+      setTimeout(() => {
+        sb.innerHTML = prevHTML;
+        canUpdateText = true;
+      }, 3000);
     }
-  }
+  };
 
   function checkIfWrong() {
     if (ended) {
@@ -239,10 +239,10 @@ document.addEventListener('DOMContentLoaded', (aa) => {
 
   setTimeout(() => {
     window.requestAnimationFrame(() => {
-        clearInterval(a);
-        parseTerms();
-        nextQuestion();
-        console.log('No DOM errors');
+      clearInterval(a);
+      parseTerms();
+      nextQuestion();
+      console.log('No DOM errors');
     });
   }, 1000);
 });

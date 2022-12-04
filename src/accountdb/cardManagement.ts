@@ -1,6 +1,10 @@
 import { prisma } from './prisma.server';
 
-export async function createUserCard(title: string, name: string, cb: Function) {
+export async function createUserCard(
+  title: string,
+  name: string,
+  cb: Function
+) {
   if (!name) {
     cb('Unexpected error (no userName provided)', null);
   }
@@ -25,8 +29,8 @@ export async function createUserCard(title: string, name: string, cb: Function) 
   let card = await prisma.card.create({
     data: {
       authorId: userExists.id,
-      name: title
-    }
+      name: title,
+    },
   });
 
   const cardsByUser = await prisma.card.findMany({
@@ -36,15 +40,21 @@ export async function createUserCard(title: string, name: string, cb: Function) 
   console.log(cardsByUser);
 }
 
-export async function createTerm(term: string, definition: string, userName: string, cardId: number, cb: Function) {
+export async function createTerm(
+  term: string,
+  definition: string,
+  userName: string,
+  cardId: number,
+  cb: Function
+) {
   if (!userName) {
     cb('Unexpected error (no such user)', null);
     return;
   }
   let userExists = await prisma.user.findUnique({
     where: {
-      name: userName
-    }
+      name: userName,
+    },
   });
   if (!userExists) {
     cb('Unexpected error (no such user)', null);
@@ -52,8 +62,8 @@ export async function createTerm(term: string, definition: string, userName: str
   }
   let cardExists = await prisma.card.findUnique({
     where: {
-      id: cardId
-    }
+      id: cardId,
+    },
   });
   if (!cardExists) {
     cb('Unexpected error (no such card)', null);
@@ -82,8 +92,8 @@ export async function createTerm(term: string, definition: string, userName: str
       term,
       definition,
       authorId: userExists.id,
-      cardId: cardExists.id
-    }
+      cardId: cardExists.id,
+    },
   });
   // console.log(existingTerm);
   cb(null, existingTerm);
@@ -92,8 +102,8 @@ export async function createTerm(term: string, definition: string, userName: str
 export async function getUserCards(name: string, cb: Function) {
   let userExists = await prisma.user.findUnique({
     where: {
-      name
-    }
+      name,
+    },
   });
   if (!userExists) {
     cb('Unexpected error (no such user)', null);
@@ -101,8 +111,8 @@ export async function getUserCards(name: string, cb: Function) {
   }
   let cards = await prisma.card.findMany({
     where: {
-      authorId: userExists.id
-    }
+      authorId: userExists.id,
+    },
   });
   cb(null, cards);
 }
@@ -112,11 +122,11 @@ export async function getCardTerms(cardId: number, cb: Function) {
     cb('Unexpected error (no card id provided)');
     return;
   }
-  
+
   let cardExists = await prisma.card.findUnique({
     where: {
-      id: cardId
-    }
+      id: cardId,
+    },
   });
   if (!cardExists) {
     cb('Unexpected error (no such card)', null);
@@ -124,24 +134,27 @@ export async function getCardTerms(cardId: number, cb: Function) {
   }
   let terms = await prisma.term.findMany({
     where: {
-      cardId: cardId
-    }
+      cardId: cardId,
+    },
   });
   if (!terms) {
-    cb('No terms found', null)
+    cb('No terms found', null);
     return;
   }
   console.log(terms);
-  
+
   cb(null, terms);
-  
 }
 
-export async function removeCardTerm(cardId: number, termId: number, cb: Function) {
+export async function removeCardTerm(
+  cardId: number,
+  termId: number,
+  cb: Function
+) {
   let termExists = await prisma.term.findUnique({
     where: {
-      id: termId
-    }
+      id: termId,
+    },
   });
   if (!termExists) {
     console.log('Unknown term (double remove req?)');
@@ -150,15 +163,15 @@ export async function removeCardTerm(cardId: number, termId: number, cb: Functio
   await prisma.term.deleteMany({
     where: {
       id: termId,
-      cardId
-    }
+      cardId,
+    },
   });
 }
 export async function removeCard(cardId: number) {
   let cardExists = await prisma.card.findUnique({
     where: {
-      id: cardId
-    }
+      id: cardId,
+    },
   });
   if (!cardExists) {
     console.log('Unknown card (double remove req?)');
@@ -166,29 +179,34 @@ export async function removeCard(cardId: number) {
   }
   await prisma.term.deleteMany({
     where: {
-      cardId
-    }
+      cardId,
+    },
   });
   let success = await prisma.card.delete({
     where: {
-      id: cardId
-    }
+      id: cardId,
+    },
   });
   console.log('Card removal result :', success);
-  
 }
 
-export async function updateTerm(cardId: number, termId: number, term: string, definition: string, cb: Function) {
+export async function updateTerm(
+  cardId: number,
+  termId: number,
+  term: string,
+  definition: string,
+  cb: Function
+) {
   console.log(termId);
   if (!termId || !cardId) {
     cb('No termId | cardId were provided');
     return;
   }
-  
+
   let termExists = prisma.term.findUnique({
     where: {
-      id: termId
-    }
+      id: termId,
+    },
   });
   if (!termExists) {
     cb('Unexpected error (no such term)');
@@ -196,30 +214,29 @@ export async function updateTerm(cardId: number, termId: number, term: string, d
   }
   let updated = await prisma.term.update({
     where: {
-      id: termId
+      id: termId,
     },
     data: {
       term,
-      definition
-    }
+      definition,
+    },
   });
   console.log(updated);
-  
 }
 
 export async function updateCard(cardId: number, text: string, cb: Function) {
   if (!text || text === '' || text === ' ') {
-    cb('Please provide a valid card name')
+    cb('Please provide a valid card name');
     return;
   }
   if (!cardId) {
-    cb('Unexpected error (invalid or no cardid provided)')
+    cb('Unexpected error (invalid or no cardid provided)');
     return;
   }
   let cardExists = await prisma.card.findUnique({
     where: {
-      id: cardId
-    }
+      id: cardId,
+    },
   });
   if (!cardExists) {
     cb('Unexpected error (no such card)');
@@ -227,13 +244,13 @@ export async function updateCard(cardId: number, text: string, cb: Function) {
   }
   let updated = await prisma.card.update({
     where: {
-      id: cardId
+      id: cardId,
     },
     data: {
-      name: text
-    }
+      name: text,
+    },
   });
-  cb(null)
+  cb(null);
 }
 export async function starTerm(id: number) {
   if (!id) {
@@ -242,20 +259,20 @@ export async function starTerm(id: number) {
   }
   let termExists = await prisma.term.findUnique({
     where: {
-      id
-    }
+      id,
+    },
   });
   if (!termExists) {
-    console.error('Unexpected problem : couldn\'t find term:', id);
+    console.error("Unexpected problem : couldn't find term:", id);
     return;
   }
   let starred = await prisma.term.update({
     where: {
-      id
+      id,
     },
     data: {
-      star: true
-    }
+      star: true,
+    },
   });
   console.log('Starred', starred);
 }
@@ -267,20 +284,20 @@ export async function unstarTerm(id: number) {
   }
   let termExists = await prisma.term.findUnique({
     where: {
-      id
-    }
+      id,
+    },
   });
   if (!termExists) {
-    console.error('Unexpected problem : couldn\'t find term:', id);
+    console.error("Unexpected problem : couldn't find term:", id);
     return;
   }
   let unstarred = await prisma.term.update({
     where: {
-      id
+      id,
     },
     data: {
-      star: false
-    }
+      star: false,
+    },
   });
   console.log('Unstarred', unstarred);
 }

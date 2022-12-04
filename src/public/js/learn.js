@@ -16,8 +16,7 @@ document.getElementById('start-btn').onclick = () => {
 };
 
 function loadCards() {
-  document.querySelector('#start-btn').innerHTML =
-    '<div class="loader"></div>';
+  document.querySelector('#start-btn').innerHTML = '<div class="loader"></div>';
   setTimeout(() => {
     document.querySelector('.info-div').hidden = true;
     document.querySelector('.learn-div').hidden = false;
@@ -31,15 +30,11 @@ const renameCard = (el) => {
 const addLoadingCard = (el) => {
   let card = createCard({
     name: '<div class="loader loader-fixed"></div>',
-    buttonActions: (id) => {
-
-    },
-    extraButtonActions: (id) => {
-
-    }
+    buttonActions: (id) => {},
+    extraButtonActions: (id) => {},
   });
   card.querySelector('button').parentNode.remove();
-}
+};
 
 document.querySelector('.create-btn').onclick = () => {
   createCard({
@@ -57,9 +52,9 @@ document.querySelector('.create-btn').onclick = () => {
       console.log(
         document.getElementById(id).querySelector('.card-text').innerText
       );
-      // sendPkt('saveCard', {
-      //   name: document.getElementById(id).querySelector('.card-text').innerText,
-      // });
+      sendPkt('saveCard', {
+        name: document.getElementById(id).querySelector('.card-text').innerText,
+      });
       addLoadingCard();
       document.getElementById(id).remove();
     },
@@ -265,7 +260,7 @@ function cardRenameFieldTyping(event) {
 }
 
 socket.on('reloadCards', () => {
-  window.location.href = 'learn?fastload=1'
+  window.location.href = 'learn?fastload=1';
 });
 
 function removeTerm(el) {
