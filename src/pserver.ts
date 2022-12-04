@@ -97,7 +97,7 @@ function handleSocketError(socket: any, err: string) {
 // WebSockets
 io.on('connect', (socket) => {
   let handshake: any = socket.handshake;
-  socket.on('saveCard', ({ name }) => {
+  socket.on('saveCard', async ({ name }) => {
     if (!handshake.session.user) {
       return;
     }
@@ -107,15 +107,16 @@ io.on('connect', (socket) => {
         if (handleSocketError(socket, err)) {
           return;
         }
-        socket.emit('loadCard', { card });
+        //socket.emit('loadCard', { card });
+        socket.emit('reloadCards');
       });
     }
   });
-  socket.on('removeCard', ({ cardId }) => {
-    removeCard(cardId);
+  socket.on('removeCard', async ({ cardId }) => {
+    await removeCard(cardId);
     socket.emit('reloadCards');
   });
-  socket.on('saveTerm', ({ cardId, term, definition }) => {
+  socket.on('saveTerm', async ({ cardId, term, definition }) => {
     console.log(cardId, term, definition);
     createTerm(
       term,
@@ -132,7 +133,7 @@ io.on('connect', (socket) => {
       }
     );
   });
-  socket.on('removeTerm', ({ cardId, termId }) => {
+  socket.on('removeTerm', async ({ cardId, termId }) => {
     removeCardTerm(cardId, termId, (err: string) => {
       if (handleSocketError(socket, err)) {
         return;
@@ -142,17 +143,17 @@ io.on('connect', (socket) => {
   socket.on('starTerm', ({ id }) => {
     starTerm(id);
   });
-  socket.on('unstarTerm', ({ id }) => {
+  socket.on('unstarTerm', async ({ id }) => {
     unstarTerm(id);
   });
-  socket.on('updateTerm', ({ cardId, termId, term, definition }) => {
+  socket.on('updateTerm', async ({ cardId, termId, term, definition }) => {
     updateTerm(cardId, termId, term, definition, (err: string) => {
       if (handleSocketError(socket, err)) {
         return;
       }
     });
   });
-  socket.on('renameCard', ({ cardId, name }) => {
+  socket.on('renameCard', async ({ cardId, name }) => {
     updateCard(cardId, name, (err: string) => {
       if (handleSocketError(socket, err)) {
         return;
@@ -160,7 +161,7 @@ io.on('connect', (socket) => {
       socket.emit('reloadCards');
     });
   });
-  socket.on('requestTerms', ({ cardId }) => {
+  socket.on('requestTerms', async ({ cardId }) => {
     if (typeof cardId !== 'number') {
       console.log(cardId, 'is not a number (socket overload?)');
       return;
