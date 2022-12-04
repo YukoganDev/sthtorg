@@ -184,7 +184,6 @@
   transform-origin: center;
 
   border-radius: 50%;
-  /* border-top: 4px solid #ffd000; */
   width: 35px;
   height: 35px;
   -webkit-animation: spin 1s ease-in-out infinite; /* Safari */
@@ -197,7 +196,6 @@
 @-webkit-keyframes spin {
   0% {
     rotate: 0deg;
-    scale: 1;
   }
   50% {
     border-radius: 25%;
@@ -208,7 +206,6 @@
   100% {
     border-radius: 50%;
     rotate: 359deg;
-    scale: 1;
   }
 }
 @keyframes spin {
