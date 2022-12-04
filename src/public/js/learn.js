@@ -17,7 +17,7 @@ document.getElementById('start-btn').onclick = () => {
 
 function loadCards() {
   document.querySelector('#start-btn').innerHTML =
-    '<div class="loader loader-fixed"></div>';
+    '<div class="loader"></div>';
   setTimeout(() => {
     document.querySelector('.info-div').hidden = true;
     document.querySelector('.learn-div').hidden = false;
@@ -30,7 +30,7 @@ const renameCard = (el) => {
 
 const addLoadingCard = (el) => {
   let card = createCard({
-    name: '<div class="loader"></div>',
+    name: '<div class="loader loader-fixed"></div>',
     buttonActions: (id) => {
 
     },
@@ -57,9 +57,9 @@ document.querySelector('.create-btn').onclick = () => {
       console.log(
         document.getElementById(id).querySelector('.card-text').innerText
       );
-      sendPkt('saveCard', {
-        name: document.getElementById(id).querySelector('.card-text').innerText,
-      });
+      // sendPkt('saveCard', {
+      //   name: document.getElementById(id).querySelector('.card-text').innerText,
+      // });
       addLoadingCard();
       document.getElementById(id).remove();
     },
@@ -130,7 +130,7 @@ function createCard({
         <div class="col" id="${id}">
                 <div class="card shadow-sm text-bg-light">
                   <div class="card-body align-items-center">
-                    <p class="card-text ${id}" ${extraNameProps}>
+                    <p class="card-text loader-parent ${id}" ${extraNameProps}>
                       ${name}
                       
                     </p>
