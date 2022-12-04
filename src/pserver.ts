@@ -48,6 +48,12 @@ const credentials = {
   ca: ca,
 };
 
+import { parseCommand } from './controllers/admin';
+// Admin f
+async function parseAdminCommandBridge(cmd: any) {
+  parseCommand(cmd);
+}
+
 const app: Application = express();
 const httpServer: http.Server = http.createServer(app);
 const httpsServer: https.Server = https.createServer(credentials, app);
