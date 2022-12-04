@@ -9,7 +9,13 @@ let routerViewPrefix = '';
 
 // Index
 router.get('/', (req, res, next) => {
-  res.render(`${routerViewPrefix}index`, { user: req.session.user || null });
+    let disabled = 'disabled';
+    let dmsg = '(Insufficient permissions)';
+    if (req.session.user && req.session.user === 'Yukogan') {
+        disabled = '';
+        dmsg = '';
+    }
+  res.render(`${routerViewPrefix}index`, { user: req.session.user || null, disabled, dmsg });
 });
 
 // Learn
@@ -75,4 +81,15 @@ router.get('/card/:cardId', (req, res, next) => {
     user: req.session.user || null,
     cardid: req.params.cardId || null,
   });
+});
+
+// Admin
+router.get('/admin', checkLogin, (req, res, next) => {
+    if (req.session.user && req.session.user === 'Yukogan') {
+        res.render('admin')
+    } else {
+        res.json({
+            error: 'No permission'
+        });
+    }
 });
