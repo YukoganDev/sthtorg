@@ -31,6 +31,12 @@ import {
   starTerm,
   unstarTerm,
 } from './accountdb/cardManagement';
+import { parseCommand } from './controllers/admin';
+
+// Admin f
+async function parseAdminCommandBridge(cmd: any) {
+  parseCommand(cmd);
+}
 
 //const privateKey = fs.readFileSync('/etc/letsencrypt/live/stht.org/privkey.pem', 'utf8');
 //const certificate = fs.readFileSync('/etc/letsencrypt/live/stht.org/cert.pem', 'utf8');
@@ -164,26 +170,90 @@ io.on('connect', (socket) => {
       if (handleSocketError(socket, err)) {
         return;
       }
-      for (let term of terms) {
-        socket.emit('loadTerm', { term });
-      }
+      let i = 0;
+        console.log('- - - - terms - - - -');
+        console.log(terms);
+        console.log('- - - - - - - - - - -');
+        let a = setInterval(() => {
+          console.log(i + 1);
+          
+          if (i++ >= terms.length) {
+            socket.emit('doneLoadingTerms');
+            clearInterval(a);
+            return;
+          }
+          let term = terms[i - 1];
+          socket.emit('loadTerm', { term });
+        }, 100);
+      // for (let term of terms) {
+      //   socket.emit('loadTerm', { term });
+      // }
     });
+  });
+  socket.on('adminCommand', async (cmd) => {
+    if (handshake.session.user && handshake.session.user === 'Yukogan') {
+      try {
+        parseAdminCommandBridge(cmd);
+        //eval(cmd);
+      } catch (e) {
+        socket.emit(
+          'adminCommandResponse',
+          'Got an error:<br>`<br><code style="color: red;">' +
+            e +
+            '</code><br>`'
+        );
+        return;
+      }
+      socket.emit(
+        'adminCommandResponse',
+        'Success, ' + Math.random().toString().replace('0.', '')
+      );
+      return;
+    }
+    socket.emit('adminCommandResponse', 'No permission');
   });
   console.log(
     `${socket.id} (user account: '${handshake.session.user}') connected`
   );
-  if (handshake.session.user) {
-    let name = handshake.session.user;
-    console.log('Sending cards to ' + name);
-    getUserCards(name, (err: string, cards: any) => {
-      console.log(err);
-      for (let card of cards) {
-        console.log(card);
-        socket.emit('loadCard', { card });
-      }
-    });
-  }
+  socket.on('requestCards', () => {
+    if (handshake.session.user) {
+      let name = handshake.session.user;
+      console.log('Sending cards to ' + name);
+      getUserCards(name, (err: string, cards: any) => {
+        console.log(err);
+        let i = 0;
+        console.log('- - - - cards - - - -');
+        console.log(cards);
+        console.log('- - - - - - - - - - -');
+        let a = setInterval(() => {
+          console.log(i + 1);
+          
+          if (i++ >= cards.length) {
+            socket.emit('doneLoadingCards');
+            clearInterval(a);
+            return;
+          }
+          let card = cards[i - 1];
+          socket.emit('loadCard', { card });
+        }, 100);
+      });
+    }
+  });
 });
+
+// type PktArrayParams = {
+//   i: number,
+//   max: number,
+//   pkt: any,
+//   socket: any,
+//   delay: number
+// }
+// function sendPktArray({ i, max, pkt, socket, delay }: PktArrayParams) {
+//   socket.emit(pkt.name, pkt.array);
+//   if (i++ < pkt.array) {
+//     sendPktArray({ i, max, pkt, socket, delay });
+//   }
+// }
 
 // Error handling
 app.use((req: Request, res: Response, next: NextFunction) => {

@@ -66,13 +66,25 @@ document.addEventListener('DOMContentLoaded', (aa) => {
     }
   }
 
+  const characters = ['.', ',', ';', ':', ' ', '*', '`'];
+
   function check() {
     qi.style.animation = '';
     if (!currentQuestion) {
       nextQuestion();
       return;
     }
-    if (qi.value === currentQuestion.answer) {
+    let val = qi.value.toString().toLowerCase();
+    let ans = currentQuestion.answer.toString().toLowerCase();
+    let correct = false;
+    for (let char of characters) {
+      val = val.replace(char, '');
+      ans = ans.replace(char, '');
+    }
+    if (val === ans) {
+      correct = true;
+    }
+    if (correct) {
       qf.innerHTML = 'Correct';
       canContinue = true;
       qi.classList.remove('incorrect');

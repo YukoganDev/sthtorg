@@ -16,12 +16,17 @@ document.getElementById('start-btn').onclick = () => {
 };
 
 function loadCards() {
-  document.querySelector('#start-btn').innerHTML = '<div class="loader"></div>';
-  setTimeout(() => {
-    document.querySelector('.info-div').hidden = true;
-    document.querySelector('.learn-div').hidden = false;
-  }, 500);
+  socket.emit('requestCards');
+  setLoadingScreen(true, 'Loading cards...');
 }
+
+socket.on('doneLoadingCards', () => {
+  setLoadingScreen(false, null);
+});
+
+socket.on('doneLoadingTerms', () => {
+  setLoadingScreen(false, null);
+});
 
 const renameCard = (el) => {
   console.log(el.target);
@@ -53,7 +58,7 @@ document.querySelector('.create-btn').onclick = () => {
         document.getElementById(id).querySelector('.card-text').innerText
       );
       sendPkt('saveCard', {
-       name: document.getElementById(id).querySelector('.card-text').innerText,
+        name: document.getElementById(id).querySelector('.card-text').innerText,
       });
       addLoadingCard();
       document.getElementById(id).remove();
@@ -184,9 +189,36 @@ function edit(cardId) {
   setCardId(cardId);
   console.log('edit');
   socket.emit('requestTerms', { cardId });
+  setLoadingScreen(true, 'Loading terms...');
+}
+function setLoadingScreen(on, title) {
+  if (on) {
+    document.querySelector('.info-div').hidden = false;
+    //document.querySelector('.info-div').style.opacity = 1;
+    //document.querySelector('.learn-div').style.opacity = 0;
+    //setTimeout(() => {
+    document.querySelector('.learn-div').hidden = true;
+    //});
+
+    document.querySelector(
+      '#start-btn'
+    ).innerHTML = `<div class="loader mt-1 mb-2"></div><p class="small text-muted m-0 mb-1">${title}</p>`;
+    return;
+  }
+  //document.querySelector('.info-div').style.opacity = 0;
+  //document.querySelector('.learn-div').style.opacity = 1;
+  //setTimeout(() => {
+  document.querySelector('.info-div').hidden = true;
+  document.querySelector('.learn-div').hidden = false;
+  //}, 500);
+}
+
+socket.on('doneLoadingTerms', () => {
+  document.querySelector('.info-div').hidden = true;
+  document.querySelector('.learn-div').hidden = false;
   document.querySelector('#terms').hidden = false;
   document.querySelector('.cards').hidden = true;
-}
+});
 
 function learn(cardId) {
   console.log('Opening card...');
