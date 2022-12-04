@@ -44,8 +44,7 @@ import {
 
 const app: Application = express();
 const httpServer: http.Server = http.createServer(app);
-//const httpsServer: https.Server = https.createServer(credentials, app); 
-
+//const httpsServer: https.Server = https.createServer(credentials, app);
 
 const io: Server = new Server(httpServer);
 
@@ -100,8 +99,8 @@ io.on('connect', (socket) => {
       console.log(name, handshake.session.user);
       createUserCard(name, handshake.session.user, (err: string, card: any) => {
         if (handleSocketError(socket, err)) {
-        return;
-      }
+          return;
+        }
         //socket.emit('loadCard', { card });
         socket.emit('reloadCards');
       });
@@ -120,8 +119,8 @@ io.on('connect', (socket) => {
       cardId,
       (err: string, term: any) => {
         if (handleSocketError(socket, err)) {
-        return;
-      }
+          return;
+        }
         if (term) {
           socket.emit('loadTerm', { term });
         }
