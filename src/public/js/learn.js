@@ -17,7 +17,7 @@ document.getElementById('start-btn').onclick = () => {
 
 function loadCards() {
   document.querySelector('#start-btn').innerHTML =
-    '<span class="material-symbols-outlined"> cached </span>';
+    '<div class="loader"></div>';
   setTimeout(() => {
     document.querySelector('.info-div').hidden = true;
     document.querySelector('.learn-div').hidden = false;
@@ -27,6 +27,19 @@ function loadCards() {
 const renameCard = (el) => {
   console.log(el.target);
 };
+
+const addLoadingCard = (el) => {
+  let card = createCard({
+    name: '<div class="loader loader-fixed"></div>',
+    buttonActions: (id) => {
+
+    },
+    extraButtonActions: (id) => {
+
+    }
+  });
+  card.querySelector('button').parentNode.remove();
+}
 
 document.querySelector('.create-btn').onclick = () => {
   createCard({
@@ -44,9 +57,10 @@ document.querySelector('.create-btn').onclick = () => {
       console.log(
         document.getElementById(id).querySelector('.card-text').innerText
       );
-      sendPkt('saveCard', {
-        name: document.getElementById(id).querySelector('.card-text').innerText,
-      });
+      // sendPkt('saveCard', {
+      //   name: document.getElementById(id).querySelector('.card-text').innerText,
+      // });
+      addLoadingCard();
       document.getElementById(id).remove();
     },
   });
@@ -116,7 +130,7 @@ function createCard({
         <div class="col" id="${id}">
                 <div class="card shadow-sm text-bg-light">
                   <div class="card-body align-items-center">
-                    <p class="card-text ${id}" ${extraNameProps}>
+                    <p class="card-text loader-parent ${id}" ${extraNameProps}>
                       ${name}
                       
                     </p>
@@ -124,7 +138,7 @@ function createCard({
                     <div
                       class="justify-content-between align-items-center"
                     >
-                      <div class="${btnGroup} align-self-end">
+                      <div class="${btnGroup} align-self-end align-items-center">
                         <button
                           type="button"
                           onclick="${buttonAction}"
@@ -152,6 +166,7 @@ function createCard({
     node.focus();
     selectText(node);
   }
+  return document.getElementById(id);
 }
 
 let currentCardId;
