@@ -100,6 +100,15 @@ function handleSocketError(socket: any, err: string) {
   return false;
 }
 
+function validateName(str: string) {
+  let regex = /^[A-Za-z0-9-_\s]+$/;
+  return regex.test(str) && str.replace(/\s/g, '').length;
+}
+
+function timeout(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 // WebSockets
 io.on('connect', (socket) => {
   let handshake: any = socket.handshake;
@@ -107,7 +116,15 @@ io.on('connect', (socket) => {
     if (!handshake.session.user) {
       return;
     }
+
     if (name) {
+      if (!validateName(name)) {
+        //socket.emit('reloadCards');
+        await timeout(2500);
+        socket.emit('error', 'Please enter a valid card name');
+        socket.emit('reloadCards');
+        return;
+      }
       console.log(name, handshake.session.user);
       createUserCard(name, handshake.session.user, (err: string, card: any) => {
         if (handleSocketError(socket, err)) {
@@ -123,6 +140,13 @@ io.on('connect', (socket) => {
     socket.emit('reloadCards');
   });
   socket.on('saveTerm', async ({ cardId, term, definition }) => {
+    if (!validateName(term)) {
+      socket.emit('error', 'Please enter a valid term');
+      return;
+    } else if (!validateName(definition)) {
+      socket.emit('error', 'Please enter a valid definition');
+      return;
+    }
     console.log(cardId, term, definition);
     createTerm(
       term,
@@ -135,6 +159,9 @@ io.on('connect', (socket) => {
         }
         if (term) {
           socket.emit('loadTerm', { term });
+          setTimeout(() => {
+            socket.emit('doneLoadingTerms');
+          }, 250);
         }
       }
     );
@@ -160,6 +187,12 @@ io.on('connect', (socket) => {
     });
   });
   socket.on('renameCard', async ({ cardId, name }) => {
+    if (!validateName(name)) {
+      await timeout(2500);
+      socket.emit('error', 'Please enter a valid card name');
+      socket.emit('reloadCards');
+      return;
+    }
     updateCard(cardId, name, (err: string) => {
       if (handleSocketError(socket, err)) {
         return;
@@ -176,21 +209,25 @@ io.on('connect', (socket) => {
       if (handleSocketError(socket, err)) {
         return;
       }
+      let delay = 25;
       let i = 0;
-        console.log('- - - - terms - - - -');
-        console.log(terms);
-        console.log('- - - - - - - - - - -');
-        let a = setInterval(() => {
-          console.log(i + 1);
-          
-          if (i++ >= terms.length) {
-            socket.emit('doneLoadingTerms');
-            clearInterval(a);
-            return;
-          }
-          let term = terms[i - 1];
-          socket.emit('loadTerm', { term });
-        }, 100);
+      console.log('- - - - terms - - - -');
+      console.log(terms);
+      console.log('- - - - - - - - - - -');
+      // setTimeout(() => {
+      let a = setInterval(() => {
+        console.log(i + 1);
+
+        if (i++ >= terms.length) {
+          socket.emit('doneLoadingTerms');
+          clearInterval(a);
+          return;
+        }
+        let term = terms[i - 1];
+        socket.emit('loadTerm', { term });
+      }, delay);
+      // }, 500);
+
       // for (let term of terms) {
       //   socket.emit('loadTerm', { term });
       // }
@@ -228,12 +265,13 @@ io.on('connect', (socket) => {
       getUserCards(name, (err: string, cards: any) => {
         console.log(err);
         let i = 0;
+        let delay = 25;
         console.log('- - - - cards - - - -');
         console.log(cards);
         console.log('- - - - - - - - - - -');
         let a = setInterval(() => {
           console.log(i + 1);
-          
+
           if (i++ >= cards.length) {
             socket.emit('doneLoadingCards');
             clearInterval(a);
@@ -241,11 +279,25 @@ io.on('connect', (socket) => {
           }
           let card = cards[i - 1];
           socket.emit('loadCard', { card });
-        }, 100);
+        }, delay);
       });
     }
   });
 });
+
+// type PktArrayParams = {
+//   i: number,
+//   max: number,
+//   pkt: any,
+//   socket: any,
+//   delay: number
+// }
+// function sendPktArray({ i, max, pkt, socket, delay }: PktArrayParams) {
+//   socket.emit(pkt.name, pkt.array);
+//   if (i++ < pkt.array) {
+//     sendPktArray({ i, max, pkt, socket, delay });
+//   }
+// }
 
 // Error handling
 app.use((req: Request, res: Response, next: NextFunction) => {

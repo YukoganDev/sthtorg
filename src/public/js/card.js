@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', (aa) => {
           return;
         }
 
-        window.location.href = '/learn?fastload=1';
+        window.location.href = '/learn';
       }, 2000);
     } else {
       qt.innerHTML = `Round <b>${round}</b> complete, made <b>${count}</b> bads. Press any key to continue`;

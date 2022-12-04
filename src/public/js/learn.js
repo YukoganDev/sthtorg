@@ -34,7 +34,7 @@ const renameCard = (el) => {
 
 const addLoadingCard = (el) => {
   let card = createCard({
-    name: '<div class="loader loader-fixed"></div>',
+    name: '<div class="loader mt-1 mb-2"></div><p class="small text-muted m-0 mb-1">Validating card...</p>',
     buttonActions: (id) => {},
     extraButtonActions: (id) => {},
   });
@@ -194,23 +194,14 @@ function edit(cardId) {
 function setLoadingScreen(on, title) {
   if (on) {
     document.querySelector('.info-div').hidden = false;
-    //document.querySelector('.info-div').style.opacity = 1;
-    //document.querySelector('.learn-div').style.opacity = 0;
-    //setTimeout(() => {
     document.querySelector('.learn-div').hidden = true;
-    //});
-
     document.querySelector(
       '#start-btn'
     ).innerHTML = `<div class="loader mt-1 mb-2"></div><p class="small text-muted m-0 mb-1">${title}</p>`;
     return;
   }
-  //document.querySelector('.info-div').style.opacity = 0;
-  //document.querySelector('.learn-div').style.opacity = 1;
-  //setTimeout(() => {
   document.querySelector('.info-div').hidden = true;
   document.querySelector('.learn-div').hidden = false;
-  //}, 500);
 }
 
 socket.on('doneLoadingTerms', () => {
@@ -252,6 +243,7 @@ function selectText(node) {
 
 document.querySelector('#create-term-btn').onclick = () => {
   if (getCardId()) {
+    setLoadingScreen(true, 'Waiting for server...');
     sendPkt('saveTerm', {
       term: 'hello',
       definition: 'bonjour',
@@ -281,6 +273,7 @@ document.querySelector('#rename-card-btn').onclick = (el) => {
 function cardRenameFieldTyping(event) {
   if (event.key === 'Enter') {
     event.preventDefault();
+    setLoadingScreen(true, 'Saving card...');
     document.querySelector('#cardRenameField').style.opacity = 0;
     let text = document.querySelector('#cardRenameField').value;
     document.querySelector('#cardRenameField').value = 'Saving...';
@@ -292,7 +285,7 @@ function cardRenameFieldTyping(event) {
 }
 
 socket.on('reloadCards', () => {
-  window.location.href = 'learn?fastload=1';
+  window.location.href = 'learn';
 });
 
 function removeTerm(el) {
@@ -310,6 +303,7 @@ function removeTerm(el) {
 }
 
 function updateTerm(el) {
+  setLoadingScreen(true, 'Waiting for server...');
   sendPkt('updateTerm', { el });
 }
 
@@ -422,8 +416,9 @@ function preventEnter(event) {
 
 // Fast load
 
-const urlSearchParams = new URLSearchParams(window.location.search);
-const params = Object.fromEntries(urlSearchParams.entries());
-if (params && params.fastload === '1') {
-  loadCards();
-}
+// const urlSearchParams = new URLSearchParams(window.location.search);
+// const params = Object.fromEntries(urlSearchParams.entries());
+// if (params && params.fastload === '1') {
+//   loadCards();
+// }
+loadCards();
