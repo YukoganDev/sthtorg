@@ -1,87 +1,166 @@
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      padding-top: 40px;
+      padding-bottom: 40px;
+      background-color: #f5f5f5;
+    }
+
+    .form-signin {
+      max-width: 330px;
+      padding: 15px;
+    }
+
+    .form-signin .form-floating:focus-within {
+      z-index: 2;
+    }
+
+    .form-signin input[type='email'] {
+      margin-bottom: -1px;
+      border-bottom-right-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+
+    .form-signin input[type='password'] {
+      margin-bottom: 10px;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+
+    #qi {
+      transition: 0.3s;
+      border-radius: 5px;
+      height: 40px;
+      border: 2px solid rgb(202, 165, 0);
+    }
+    #qi:focus {
+      outline: none;
+    }
+
+    .correct {
+      border: 2px solid green;
+      color: green;
+    }
+    .incorrect {
+      border: 2px dashed crimson;
+      scale: 1.1;
+      color: #dc143c;
+    }
+
+    .gicon-btn {
+      vertical-align: middle;
+    }
+
+    @keyframes shake {
+      10%,
+      90% {
+        transform: translate3d(-1px, 0, 0);
+      }
+
+      20%,
+      80% {
+        transform: translate3d(2px, 0, 0);
+      }
+
+      30%,
+      50%,
+      70% {
+        transform: translate3d(-4px, 0, 0);
+      }
+
+      40%,
+      60% {
+        transform: translate3d(4px, 0, 0);
+      }
+    }
+
+    .back-btn {
+      position: absolute;
+      margin: 1vw;
+
+      left: 1vw;
+      top: 2vh;
+
+      vertical-align: middle;
+    }
+    .share-btn {
+      position: absolute;
+      margin: 1vw;
+      vertical-align: middle;
+
+      margin-left: 1px;
+      right: 1vw;
+      top: 2vh;
+      height: 45px;
+
+      color: #727272;
+    }
+    .btn {
+      transition: 0.5s;
+    }
+    .btn:hover {
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+        0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    }
+
+.loader-parent {
+  vertical-align: middle;
+  justify-items: center;
+  text-align: center;
 }
 
-:root {
-  --hue-neutral: 200;
-  --hue-wrong: 0;
-  --hue-correct: 145;
-}
+.loader {
+  border: 4px solid rgb(252, 239, 221);
+  align-self: center;
+  position: relative;
+  margin: 0 auto;
 
-body {
-  --hue: var(--hue-neutral);
-  padding: 0;
-  margin: 0;
-  display: flex;
-  width: 100vw;
-  height: 100vh;
-  justify-content: center;
-  align-items: center;
-  background-color: hsl(var(--hue), 100%, 20%);
-}
+  transform-origin: center;
 
-body.correct {
-  --hue: var(--hue-correct);
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  -webkit-animation: spin 1s ease-in-out infinite; /* Safari */
+  animation: spin 1s ease-in-out infinite;
 }
-
-body.wrong {
-  --hue: var(--hue-wrong);
+/* .loader-fixed {
+  margin-left: 40%;
+  margin-top: 8px;
+} */
+@-webkit-keyframes spin {
+  0% {
+    rotate: 0deg;
+  }
+  50% {
+    border-radius: 25%;
+  }
+  75% {
+    border-radius: 25%;
+  }
+  100% {
+    border-radius: 50%;
+    rotate: 359deg;
+  }
 }
-
-.container {
-  width: 800px;
-  max-width: 80%;
-  background-color: white;
-  border-radius: 5px;
-  padding: 10px;
-  box-shadow: 0 0 10px 2px;
-}
-
-.btn-grid {
-  display: grid;
-  grid-template-columns: repeat(2, auto);
-  gap: 10px;
-  margin: 20px 0;
-}
-
-.btn {
-  --hue: var(--hue-neutral);
-  border: 1px solid hsl(var(--hue), 100%, 30%);
-  background-color: hsl(var(--hue), 100%, 50%);
-  border-radius: 5px;
-  padding: 5px 10px;
-  color: white;
-  outline: none;
-}
-
-.btn:hover {
-  border-color: black;
-}
-
-.btn.correct {
-  --hue: var(--hue-correct);
-  color: black;
-}
-
-.btn.wrong {
-  --hue: var(--hue-wrong);
-}
-
-.start-btn,
-.next-btn {
-  font-size: 1.5rem;
-  font-weight: bold;
-  padding: 10px 20px;
-}
-
-.controls {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.hide {
-  display: none;
+@keyframes spin {
+  0% {
+    rotate: 0deg;
+    scale: 1;
+  }
+  50% {
+    border-radius: 25%;
+  }
+  75% {
+    border-radius: 25%;
+  }
+  100% {
+    border-radius: 50%;
+    rotate: 359deg;
+    scale: 1;
+  }
 }

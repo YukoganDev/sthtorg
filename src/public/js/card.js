@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', (aa) => {
     qf.innerHTML = `<br />`;
     qi.value = '';
     if (newQs.length <= 0) {
-      qt.innerHTML = `Done. No bads! Returning to the learn page...`;
+      qt.innerHTML = '<div class="loader mt-1 mb-2 text-danger"></div><p class="small text-muted m-0 mb-1">Done. No bads! Returning to the learn page...</p>'
       qi.disabled = true;
       setTimeout(() => {
         if (
@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', (aa) => {
     console.log(currentQuestion);
     if (!questions[0]) {
       qt.innerHTML =
-        '<p style="color: red;">Unknown or empty card. Retrying in 5 seconds...</p>';
+        '<div class="loader mt-1 mb-3 text-danger"></div><p class="small text-muted m-0 mb-1">Unknown or empty card. Retrying in 5 seconds...</p>';
       setTimeout(() => {
         window.location.reload();
       }, 5000);
@@ -216,20 +216,7 @@ document.addEventListener('DOMContentLoaded', (aa) => {
     });
   });
 
-  let i = 0;
-  let imax = 3;
-  let dots = '';
-  let a = setInterval(() => {
-    i++;
-    if (i > imax) {
-      i = 0;
-      dots = '';
-    }
-    for (let j = 0; j < i; j++) {
-      dots += '.';
-    }
-    qt.innerText = 'Waiting for card data' + dots;
-  }, 300);
+  qt.innerHTML = '<div class="loader mt-1 mb-3 text-danger"></div><p class="small text-muted m-0 mb-1">Gathering card data...</p>';
 
   function parseTerms() {
     let starredArr = [];
@@ -251,7 +238,6 @@ document.addEventListener('DOMContentLoaded', (aa) => {
 
   setTimeout(() => {
     window.requestAnimationFrame(() => {
-      clearInterval(a);
       parseTerms();
       nextQuestion();
       console.log('No DOM errors');
