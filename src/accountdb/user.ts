@@ -1,5 +1,5 @@
 import { User } from '@prisma/client';
-import { prisma } from "./prisma.server";
+import { prisma } from './prisma.server';
 
 export type AccountResult = number;
 
@@ -8,19 +8,24 @@ export const AccountResult = {
   NAME_TAKEN: 1,
   SUCCESS: 2,
   ERROR: 3,
-  UNKNOWN_USER: 4
+  UNKNOWN_USER: 4,
 };
 
-export const createUser = async (name: string, email: string, password: string, cb: Function) => {
+export const createUser = async (
+  name: string,
+  email: string,
+  password: string,
+  cb: Function
+) => {
   let emailExists = await prisma.user.findUnique({
     where: {
-      email
-    }
+      email,
+    },
   });
   let nameExists = await prisma.user.findUnique({
     where: {
-      name
-    }
+      name,
+    },
   });
   if (emailExists) {
     cb(AccountResult.EMAIL_TAKEN, null);
@@ -34,27 +39,33 @@ export const createUser = async (name: string, email: string, password: string, 
     data: {
       name,
       email,
-      password
-    }
+      password,
+    },
   });
 
   cb(AccountResult.SUCCESS, user);
-}
+};
 
-type AccountData = { email: string, password: string };
-export const checkCredentials = async ({ email, password }: AccountData, cb: Function) => {
+type AccountData = { email: string; password: string };
+export const checkCredentials = async (
+  { email, password }: AccountData,
+  cb: Function
+) => {
   let exists = await prisma.user.findUnique({
     where: {
-      email
-    }
+      email,
+    },
   });
-  if (!exists) { cb(AccountResult.UNKNOWN_USER); return; }
+  if (!exists) {
+    cb(AccountResult.UNKNOWN_USER);
+    return;
+  }
   if (exists.password === password) {
     cb(AccountResult.SUCCESS, exists);
     return;
   }
   cb(AccountResult.ERROR);
-}
+};
 
 createUser('Layla', 'layla@stht.org', 'simba', () => {});
 createUser('Yukogan', 'yuko@gmx.li', 'yu.ry4507', () => {});
