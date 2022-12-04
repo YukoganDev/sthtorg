@@ -52,9 +52,9 @@ document.querySelector('.create-btn').onclick = () => {
       console.log(
         document.getElementById(id).querySelector('.card-text').innerText
       );
-      //sendPkt('saveCard', {
-      //  name: document.getElementById(id).querySelector('.card-text').innerText,
-      //});
+      sendPkt('saveCard', {
+       name: document.getElementById(id).querySelector('.card-text').innerText,
+      });
       addLoadingCard();
       document.getElementById(id).remove();
     },
