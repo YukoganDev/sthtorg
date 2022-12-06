@@ -1,5 +1,6 @@
 import { User } from '@prisma/client';
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router, Request, Response, NextFunction, request } from 'express';
+import requestPromise from 'request-promise';
 import { AccountResult, checkCredentials } from '../accountdb/user';
 import { config } from '../config';
 
@@ -92,4 +93,24 @@ router.get('/admin', checkLogin, (req, res, next) => {
             error: 'No permission'
         });
     }
+});
+
+// MuseScore Scraper
+
+router.get('/musescore', (req, res, next) => {
+  res.render('musescorescraper');
+});
+
+router.post('/musescore', (req, res, next) => {
+  let url = req.body.url;
+  // console.log(req.headers);
+  if (!url) { console.error('No url provided'); return; }
+  requestPromise(url, (error: any, response: any, html: any) => {
+    if (error && response.statusCode == 200) {
+      //console.log(html);
+      
+    }
+    console.log(html);
+    res.send(html);
+  });
 });
