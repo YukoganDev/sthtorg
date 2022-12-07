@@ -41,10 +41,16 @@ html,
     #qi:focus {
       outline: none;
     }
+    @keyframes resetScale {
+      100% {
+        scale: 1; 
+      }
+    }
 
     .correct {
       border: 2px solid green;
       color: green;
+      scale: 1.1;
     }
     .incorrect {
       border: 2px dashed crimson;
@@ -127,6 +133,10 @@ html,
   height: 35px;
   -webkit-animation: spin 1s ease-in-out infinite; /* Safari */
   animation: spin 1s ease-in-out infinite;
+}
+.disabled {
+  color: #727272;
+  background: #CCC;
 }
 /* .loader-fixed {
   margin-left: 40%;

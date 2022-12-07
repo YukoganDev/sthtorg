@@ -241,7 +241,7 @@ io.on('connect', (socket) => {
           return;
         }
         let term = terms[i - 1];
-        socket.emit('loadTerm', { term });
+        socket.emit('loadTerm', { term, percentage: i / terms.length * 100 });
       }, delay);
       // }, 500);
 
@@ -295,7 +295,7 @@ io.on('connect', (socket) => {
             return;
           }
           let card = cards[i - 1];
-          socket.emit('loadCard', { card });
+          socket.emit('loadCard', { card, percentage: i / cards.length * 100 });
         }, delay);
       });
     }

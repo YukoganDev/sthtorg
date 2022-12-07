@@ -246,7 +246,7 @@ io.on('connect', (socket) => {
           return;
         }
         let term = terms[i - 1];
-        socket.emit('loadTerm', { term });
+        socket.emit('loadTerm', { term, percentage: i / terms.length * 100 });
       }, delay);
       // }, 500);
 
@@ -300,26 +300,12 @@ io.on('connect', (socket) => {
             return;
           }
           let card = cards[i - 1];
-          socket.emit('loadCard', { card });
+          socket.emit('loadCard', { card, percentage: i / cards.length * 100 });
         }, delay);
       });
     }
   });
 });
-
-// type PktArrayParams = {
-//   i: number,
-//   max: number,
-//   pkt: any,
-//   socket: any,
-//   delay: number
-// }
-// function sendPktArray({ i, max, pkt, socket, delay }: PktArrayParams) {
-//   socket.emit(pkt.name, pkt.array);
-//   if (i++ < pkt.array) {
-//     sendPktArray({ i, max, pkt, socket, delay });
-//   }
-// }
 
 // Error handling
 app.use((req: Request, res: Response, next: NextFunction) => {

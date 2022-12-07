@@ -256,6 +256,7 @@ document.querySelector('#create-term-btn').onclick = () => {
 
 document.querySelector('#delete-card-btn').onclick = (el) => {
   if (window.confirm('Are you sure? The card will be removed forever')) {
+    setLoadingScreen(true, 'Removing card...');
     sendPkt('removeCard', {
       cardId: getCardId(),
     });

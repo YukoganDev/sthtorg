@@ -44,6 +44,12 @@ document.addEventListener('DOMContentLoaded', (aa) => {
     }
   };
 
+  if (window.chrome) {
+    console.log('%cChromium browser detected', 'color: green;');
+  }
+
+  const characters = ['.', ',', ';', ':', ' ', '*', '`'];
+  
   function checkIfWrong() {
     if (ended) {
       ended = false;
@@ -55,18 +61,28 @@ document.addEventListener('DOMContentLoaded', (aa) => {
           check();
           return;
         }
-        if (qi.value === currentQuestion.answer) {
+        let val = qi.value.toString().toLowerCase();
+        let ans = currentQuestion.answer.toString().toLowerCase();
+        let correct = false;
+        for (let char of characters) {
+          val = val.replace(char, '');
+          ans = ans.replace(char, '');
+        }
+        if (val === ans) {
+          correct = true;
+        }
+        if (correct) {
           qi.disabled = true;
+          qi.classList.add('disabled');
           setTimeout(() => {
             check();
             qi.disabled = false;
+            qi.classList.remove('disabled');
           }, 800);
         }
       }, 0);
     }
   }
-
-  const characters = ['.', ',', ';', ':', ' ', '*', '`'];
 
   function check() {
     qi.style.animation = '';
@@ -89,6 +105,11 @@ document.addEventListener('DOMContentLoaded', (aa) => {
       canContinue = true;
       qi.classList.remove('incorrect');
       qi.classList.add('correct');
+      qi.style.animation = 'resetScale .3s ease-out 1';
+      setTimeout(() => {
+        qi.style.animation = '';
+        qi.classList.remove('correct');
+      }, 300);
       qt.innerHTML += '<br />';
       if (questionsToGo.length <= 0) {
         console.log('ending...');
@@ -137,7 +158,8 @@ document.addEventListener('DOMContentLoaded', (aa) => {
     qf.innerHTML = `<br />`;
     qi.value = '';
     if (newQs.length <= 0) {
-      qt.innerHTML = '<div class="loader mt-1 mb-2 text-danger"></div><p class="small text-muted m-0 mb-1">Done. No bads! Returning to the learn page...</p>'
+      qt.innerHTML =
+        '<div class="loader mt-1 mb-2 text-danger"></div><p class="small text-muted m-0 mb-1">Done. No bads! Returning to the learn page...</p>';
       qi.disabled = true;
       setTimeout(() => {
         if (
@@ -198,7 +220,8 @@ document.addEventListener('DOMContentLoaded', (aa) => {
     cardId: parseInt(document.getElementById('cardid').dataset.cardid),
   });
 
-  socket.on('loadTerm', ({ term }) => {
+  socket.on('loadTerm', ({ term, percentage }) => {
+    qt.innerHTML = `<div class="loader mt-1 mb-3 text-danger"></div><p class="small text-muted m-0 mb-1">Loading card (${percentage.toFixed(1)}%)...</p>`;
     console.log('Got', term);
     questions.push({
       text: term.term,
@@ -216,7 +239,8 @@ document.addEventListener('DOMContentLoaded', (aa) => {
     });
   });
 
-  qt.innerHTML = '<div class="loader mt-1 mb-3 text-danger"></div><p class="small text-muted m-0 mb-1">Gathering card data...</p>';
+  qt.innerHTML =
+    '<div class="loader mt-1 mb-3 text-danger"></div><p class="small text-muted m-0 mb-1">Waiting for server...</p>';
 
   function parseTerms() {
     let starredArr = [];
@@ -236,11 +260,16 @@ document.addEventListener('DOMContentLoaded', (aa) => {
     }
   }
 
-  setTimeout(() => {
-    window.requestAnimationFrame(() => {
-      parseTerms();
-      nextQuestion();
-      console.log('No DOM errors');
-    });
-  }, 1000);
+  socket.on('doneLoadingTerms', () => {
+    qt.innerHTML =
+    '<div class="loader mt-1 mb-3 text-danger"></div><p class="small text-muted m-0 mb-1">Validating...</p>';
+    setTimeout(() => {
+      window.requestAnimationFrame(() => {
+        console.log('%cLoaded all terms', 'color: yellow;');
+        parseTerms();
+        nextQuestion();
+        console.log('%cNo DOM errors', 'color: green;');
+      });
+    }, 200);
+  });
 });
