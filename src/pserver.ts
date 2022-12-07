@@ -16,6 +16,8 @@ import { router as indexRouter } from './routes/index';
 // import { router as logoutRouter } from "./routes/logout";
 // import { router as cardRouter } from "./routes/card";
 import session, { Session } from 'express-session';
+import Redis from 'ioredis';
+import connectRedis from 'connect-redis';
 import { AccountResult, checkCredentials, createUser } from './accountdb/user';
 import { User } from '@prisma/client';
 import { Handshake } from 'socket.io/dist/socket';
@@ -69,11 +71,31 @@ interface Socket {
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+// Db init (postgresql://postgres:yu.ry4507@157.90.241.190:5432/userdb)
+
+const RedisStore = connectRedis(session);
+const redis = new Redis();
+// const sessionDBaccess = new Pool({
+//   user: 'postgres',
+//   password: 'yu.ry4507',
+//   host: '157.90.241.190',
+//   port: 5432,
+//   database: 'userdb',
+// });
+
 // Initialization
 let sessionMiddleware = session({
+  name: 'sessionid',
   secret: config.SESSION_SECRET,
   saveUninitialized: true,
   resave: true,
+  cookie: {
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  },
+  store: new RedisStore({
+    client: redis,
+    disableTouch: true
+  })
 });
 app.use(sessionMiddleware);
 let emptyObj: any = {};
