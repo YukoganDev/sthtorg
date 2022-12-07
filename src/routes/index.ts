@@ -1,4 +1,6 @@
 import { User } from '@prisma/client';
+import axios from 'axios';
+import * as cheerio from 'cheerio';
 import { Router, Request, Response, NextFunction, request } from 'express';
 import requestPromise from 'request-promise';
 import { AccountResult, checkCredentials } from '../accountdb/user';
@@ -10,13 +12,17 @@ let routerViewPrefix = '';
 
 // Index
 router.get('/', (req, res, next) => {
-    let disabled = 'disabled';
-    let dmsg = '(Insufficient permissions)';
-    if (req.session.user && req.session.user === 'Yukogan') {
-        disabled = '';
-        dmsg = '';
-    }
-  res.render(`${routerViewPrefix}index`, { user: req.session.user || null, disabled, dmsg });
+  let disabled = 'disabled';
+  let dmsg = '(Insufficient permissions)';
+  if (req.session.user && req.session.user === 'Yukogan') {
+    disabled = '';
+    dmsg = '';
+  }
+  res.render(`${routerViewPrefix}index`, {
+    user: req.session.user || null,
+    disabled,
+    dmsg,
+  });
 });
 
 // Learn
@@ -86,31 +92,11 @@ router.get('/card/:cardId', (req, res, next) => {
 
 // Admin
 router.get('/admin', checkLogin, (req, res, next) => {
-    if (req.session.user && req.session.user === 'Yukogan') {
-        res.render('admin')
-    } else {
-        res.json({
-            error: 'No permission'
-        });
-    }
-});
-
-// MuseScore Scraper
-
-router.get('/musescore', (req, res, next) => {
-  res.render('musescorescraper');
-});
-
-router.post('/musescore', (req, res, next) => {
-  let url = req.body.url;
-  // console.log(req.headers);
-  if (!url) { console.error('No url provided'); return; }
-  requestPromise(url, (error: any, response: any, html: any) => {
-    if (error && response.statusCode == 200) {
-      //console.log(html);
-      
-    }
-    console.log(html);
-    res.send(html);
-  });
+  if (req.session.user && req.session.user === 'Yukogan') {
+    res.render('admin');
+  } else {
+    res.json({
+      error: 'No permission',
+    });
+  }
 });

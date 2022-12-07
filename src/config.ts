@@ -13,7 +13,7 @@ export const config: SthtConfig = {
   VERBOSE: true,
 
   //
-  SESSION_SECRET: '9utv93p18491tvuqxb941',
+  SESSION_SECRET: 'a5f5ff89ebb1afde2066890ef11932d937447defe8f823934e12503a4f6073482a4441a6ff5832d45d58994179492ecb3e3913dc287d07cb1dfbe43f3564ee86',
 
   //
   DEV_MODE: true,
