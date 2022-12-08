@@ -221,7 +221,7 @@ document.addEventListener('DOMContentLoaded', (aa) => {
   });
 
   socket.on('loadTerm', ({ term, percentage }) => {
-    qt.innerHTML = `<div class="loader mt-1 mb-3 text-danger"></div><p class="small text-muted m-0 mb-1">Loading card (${percentage.toFixed(1)}%)...</p>`;
+    qt.querySelector('p').innerHTML = `<p class="small text-muted m-0 mb-1">Loading card (${percentage.toFixed(1)}%)...</p>`;
     console.log('Got', term);
     questions.push({
       text: term.term,
