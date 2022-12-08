@@ -307,6 +307,20 @@ io.on('connect', (socket) => {
   });
 });
 
+// type PktArrayParams = {
+//   i: number,
+//   max: number,
+//   pkt: any,
+//   socket: any,
+//   delay: number
+// }
+// function sendPktArray({ i, max, pkt, socket, delay }: PktArrayParams) {
+//   socket.emit(pkt.name, pkt.array);
+//   if (i++ < pkt.array) {
+//     sendPktArray({ i, max, pkt, socket, delay });
+//   }
+// }
+
 // Error handling
 app.use((req: Request, res: Response, next: NextFunction) => {
   next(createError(404));

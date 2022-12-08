@@ -21,8 +21,8 @@
       defer></script>
     <title>Document</title>
     <!-- Added Stylesheets -->
-    <link rel="stylesheet" href="./css/index.css" />
-    <link rel="stylesheet" href="./css/learn.css" />
+    <link rel="stylesheet" href="/css/index.css" />
+    <link rel="stylesheet" href="/css/learn.css" />
   </head>
 
   <body class="d-flex h-100 text-center text-bg-warning">
@@ -34,7 +34,7 @@
             <a class="nav-link fw-bold py-1 px-0" aria-current="page" href="/"
               >Home</a
             >
-            <a class="nav-link fw-bold py-1 px-0 active" href="learn"
+            <a class="nav-link fw-bold py-1 px-0 active" href="/learn"
               >Learn<sub class="text-muted">Bèta</sub></a
             >
             <a class="nav-link fw-bold py-1 px-0" href="/login" id="login-btn"
@@ -124,6 +124,8 @@
     </div>
     <div id="empty"></div>
 
+    <div id="cardid" data-cardid="<%=cardid%>"></div>
+    <div id="readonly" data-readonly="<%=readonly%>"></div>
     <div id="user" data-user="<%=user%>"></div>
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script src="/js/learn.js" defer></script>

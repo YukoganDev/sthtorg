@@ -129,6 +129,7 @@
 .term {
   text-align: left;
   cursor: text;
+  font-size: large;
 }
 .definition {
   text-align: left;
@@ -282,6 +283,7 @@
   line-break: anywhere;
   max-width: max-content;
   width: 100%;
+  /* padding-left: 7px; */
 }
 #termDiv p {
   transition: 0.7s;

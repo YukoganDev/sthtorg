@@ -3,6 +3,9 @@ const socket = io();
 const loginBtn = document.querySelector('#login-btn');
 
 let user = document.getElementById('user').dataset.user;
+let passedCardId = parseInt(document.getElementById('cardid').dataset.cardid);
+let readonly = parseInt(document.getElementById('readonly').dataset.readonly);
+console.log(user, passedCardId, readonly);
 console.log(`Logged in as ${user}`);
 if (user) {
   loginBtn.innerHTML = `Logout (${user})`;
@@ -16,6 +19,22 @@ document.getElementById('start-btn').onclick = () => {
 };
 
 function loadCards() {
+  if (readonly === 1) {
+    document.querySelector('#create-term-btn').remove();
+    document.querySelector('#rename-card-btn').remove();
+    document.querySelector('#delete-card-btn').remove();
+    if (!passedCardId) {
+      console.error(
+        'Unexpected error: cardid was not provided through the url'
+      );
+      return;
+    }
+    setCardId(passedCardId);
+    console.log('Opening card', passedCardId + '...');
+    socket.emit('requestTerms', { cardId: passedCardId, readonly: true });
+    setLoadingScreen(true, 'Opening card in read only mode...');
+    return;
+  }
   socket.emit('requestCards');
   setLoadingScreen(true, 'Loading cards...');
 }
@@ -187,7 +206,7 @@ function getCardId() {
 
 function edit(cardId) {
   setCardId(cardId);
-  console.log('edit');
+  console.log('Editing card', cardId + '...');
   socket.emit('requestTerms', { cardId });
   setLoadingScreen(true, 'Loading terms...');
 }
@@ -218,7 +237,11 @@ function learn(cardId) {
 
 socket.on('loadTerm', ({ term }) => {
   console.log('Got', term);
-  createTerm(term);
+  let nterm = term;
+  if (readonly === 1) {
+    nterm.readonly = readonly;
+  }
+  createTerm(nterm);
 });
 
 function selectText(node) {
@@ -310,13 +333,14 @@ function updateTerm(el) {
   sendPkt('updateTerm', { el });
 }
 
-function createTerm({ term, definition, cardId, id, star }) {
+function createTerm({ term, definition, cardId, id, star, readonly }) {
   let starIconStr = 'toggle_off';
   let starColor = '';
   if (star) {
     starIconStr = 'toggle_on';
     starColor = 'rgb(243, 179, 16)';
   }
+
   let el = `
         <a
               href="#"
@@ -325,7 +349,7 @@ function createTerm({ term, definition, cardId, id, star }) {
             >
               <div class="d-flex gap-2 w-100 btn-group justify-content-between fullwidth">
                 <div style="word-wrap: break-word;" id="termDiv" data-cardId="${cardId}" data-termId="${id}">
-                  <p class="mb-1 term" onfocus="selectText(this);" onkeypress="preventEnter(event);">
+                  <p class="m b-1 term" onfocus="selectText(this);" onkeypress="preventEnter(event);">
                     ${term}
                   </p>
                   <hr />
@@ -351,8 +375,31 @@ function createTerm({ term, definition, cardId, id, star }) {
               </div>
             </a>
         `;
+  if (readonly) {
+    el = getAlternateReadonlyTerm(term, definition, cardId, id);
+  }
+  console.log('Adding term', el);
   document.querySelector('.terms').insertAdjacentHTML('afterbegin', el);
   return { term, definition, cardId, id, star };
+}
+
+function getAlternateReadonlyTerm(term, definition, cardId, id) {
+  console.log(id);
+  return `
+        <a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3 item fullwidth termItem" aria-current="true" disabled>
+              <div class="d-flex gap-2 w-100 btn-group justify-content-between fullwidth">
+                <div style="word-wrap: break-word;" id="termDiv" data-cardId="${cardId}" data-termId="${id}">
+                  <p class="mb-1 term">
+                    ${term}
+                  </p>
+                  <hr />
+                  <p class="mb-0 opacity-75 definition">
+                    ${definition}
+                  </p>
+                </div>
+              </div>
+            </a>
+        `;
 }
 
 function starTerm(el) {
