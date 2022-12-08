@@ -351,7 +351,7 @@ function createTerm({ term, definition, cardId, id, star }) {
               </div>
             </a>
         `;
-  document.querySelector('.terms').insertAdjacentHTML('beforeend', el);
+  document.querySelector('.terms').insertAdjacentHTML('afterbegin', el);
   return { term, definition, cardId, id, star };
 }
 
