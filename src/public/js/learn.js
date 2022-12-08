@@ -226,19 +226,21 @@ function selectText(node) {
   if (!node) {
     finalNode = document.getElementById('empty');
   }
-  if (document.body.createTextRange) {
-    const range = document.body.createTextRange();
-    range.moveToElementText(finalNode);
-    range.select();
-  } else if (window.getSelection) {
-    const selection = window.getSelection();
-    const range = document.createRange();
-    range.selectNodeContents(finalNode);
-    selection.removeAllRanges();
-    selection.addRange(range);
-  } else {
-    console.warn('Could not select text: Unsupported browser');
-  }
+  setTimeout(() => {
+    if (document.body.createTextRange) {
+      const range = document.body.createTextRange();
+      range.moveToElementText(finalNode);
+      range.select();
+    } else if (window.getSelection) {
+      const selection = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(finalNode);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    } else {
+      console.warn('Could not select text: Unsupported browser');
+    }
+  }, 0);
 }
 
 document.querySelector('#create-term-btn').onclick = () => {
