@@ -42,12 +42,10 @@ function loadCards() {
 
 socket.on('doneLoadingCards', () => {
   setLoadingScreen(false, null);
-  checkVersion();
 });
 
 socket.on('doneLoadingTerms', () => {
   setLoadingScreen(false, null);
-  checkVersion();
 });
 
 const renameCard = (el) => {
@@ -214,16 +212,20 @@ function edit(cardId) {
   setLoadingScreen(true, 'Loading terms...');
 }
 function setLoadingScreen(on, title) {
-  if (on) {
-    document.querySelector('.info-div').hidden = false;
-    document.querySelector('.learn-div').hidden = true;
-    document.querySelector(
-      '#start-btn'
-    ).innerHTML = `<div class="loader mt-1 mb-2"></div><p class="small text-muted m-0 mb-1">${title}</p>`;
-    return;
-  }
-  document.querySelector('.info-div').hidden = true;
-  document.querySelector('.learn-div').hidden = false;
+    if (on) {
+      document.querySelector('.info-div').hidden = false;
+      document.querySelector('.learn-div').hidden = true;
+      document.querySelector(
+        '#start-btn'
+      ).innerHTML = `<div class="loader mt-1 mb-2"></div><p class="small text-muted m-0 mb-1">${title}</p>`;
+      return;
+    }
+    document.querySelector('.info-div').hidden = true;
+    document.querySelector('.learn-div').hidden = false;
+    setTimeout(() => {
+      checkVersion();
+    }, 0);
+    
 }
 
 socket.on('doneLoadingTerms', () => {
@@ -239,7 +241,7 @@ function learn(cardId) {
 }
 
 socket.on('loadTerm', ({ term }) => {
-  console.log('Got', term);
+  //console.log('Got', term);
   let nterm = term;
   if (readonly === 1) {
     nterm.readonly = readonly;
@@ -317,23 +319,48 @@ function cardRenameFieldTyping(event) {
   }
 }
 
-let currentVersion = parseInt(document.querySelector('#version').dataset.version);
+let currentVersion = parseInt(
+  document.querySelector('#version').dataset.version
+);
 let loadedVersion = parseInt(localStorage.getItem('stht-version'));
-async function checkVersion() {
-  setTimeout(() => {
-    console.log('Loaded stht version: ' + loadedVersion + ', latest version: ' + currentVersion);
-    if (!loadedVersion) {
-      localStorage.setItem('stht-version', currentVersion);
-    }
-    if (loadedVersion !== currentVersion) {
-      console.warn('Your version (' + loadedVersion + ') seems to be out of date (' + currentVersion + '). Updating now...');
-      localStorage.setItem('stht-version', currentVersion);
-      setLoadingScreen(true, 'Your version seems to be out of date (' + loadedVersion + '). Updating now...');
-      setTimeout(() => {
-        window.location.reload(true);
-      }, 5000);
-    }
-  }, 10);
+let isUpdating = false;
+function checkVersion() {
+  if (isUpdating) {
+    return false;
+  }
+  console.log(
+    'Loaded stht version: ' +
+      loadedVersion +
+      ', latest version: ' +
+      currentVersion
+  );
+  if (!loadedVersion) {
+    localStorage.setItem('stht-version', currentVersion);
+  }
+  if (loadedVersion !== currentVersion) {
+    isUpdating = true;
+    console.warn(
+      'Your version (' +
+        loadedVersion +
+        ') seems to be out of date (' +
+        currentVersion +
+        '). Updating now...'
+    );
+    localStorage.setItem('stht-version', currentVersion);
+    console.warn('Forcing the update...');
+    setLoadingScreen(
+      true,
+      'Your version seems to be out of date (' +
+        loadedVersion +
+        '). Updating now...'
+    );
+    setTimeout(() => {
+      window.location.reload(true);
+    }, 5000);
+    return false;
+  }
+
+  return true;
 }
 
 socket.on('reloadCards', () => {
@@ -404,13 +431,13 @@ function createTerm({ term, definition, cardId, id, star, readonly }) {
   if (readonly) {
     el = getAlternateReadonlyTerm(term, definition, cardId, id);
   }
-  console.log('Adding term', el);
+  //console.log('Adding term', el);
   document.querySelector('.terms').insertAdjacentHTML('afterbegin', el);
   return { term, definition, cardId, id, star };
 }
 
 function getAlternateReadonlyTerm(term, definition, cardId, id) {
-  console.log(id);
+  //console.log(id);
   return `
         <a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3 item fullwidth termItem" aria-current="true" disabled>
               <div class="d-flex gap-2 w-100 btn-group justify-content-between fullwidth">
