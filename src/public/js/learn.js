@@ -222,9 +222,9 @@ function setLoadingScreen(on, title) {
     }
     document.querySelector('.info-div').hidden = true;
     document.querySelector('.learn-div').hidden = false;
-    setTimeout(() => {
-      checkVersion();
-    }, 0);
+    // setTimeout(() => {
+    //   checkVersion();
+    // }, 0);
     
 }
 
@@ -319,49 +319,49 @@ function cardRenameFieldTyping(event) {
   }
 }
 
-let currentVersion = parseInt(
-  document.querySelector('#version').dataset.version
-);
-let loadedVersion = parseInt(localStorage.getItem('stht-version'));
-let isUpdating = false;
-function checkVersion() {
-  if (isUpdating) {
-    return false;
-  }
-  console.log(
-    'Loaded stht version: ' +
-      loadedVersion +
-      ', latest version: ' +
-      currentVersion
-  );
-  if (!loadedVersion) {
-    localStorage.setItem('stht-version', currentVersion);
-  }
-  if (loadedVersion !== currentVersion) {
-    isUpdating = true;
-    console.warn(
-      'Your version (' +
-        loadedVersion +
-        ') seems to be out of date (' +
-        currentVersion +
-        '). Updating now...'
-    );
-    localStorage.setItem('stht-version', currentVersion);
-    console.warn('Forcing the update...');
-    setLoadingScreen(
-      true,
-      'Your version seems to be out of date (' +
-        loadedVersion +
-        '). Updating now...'
-    );
-    setTimeout(() => {
-      window.location.reload(true);
-    }, 5000);
-    return false;
-  }
+// let currentVersion = parseInt(
+//   document.querySelector('#version').dataset.version
+// );
+// let loadedVersion = parseInt(localStorage.getItem('stht-version'));
+// let isUpdating = false;
+// function checkVersion() {
+//   if (isUpdating) {
+//     return false;
+//   }
+//   console.log(
+//     'Loaded stht version: ' +
+//       loadedVersion +
+//       ', latest version: ' +
+//       currentVersion
+//   );
+//   if (!loadedVersion) {
+//     localStorage.setItem('stht-version', currentVersion);
+//   }
+//   if (loadedVersion !== currentVersion) {
+//     isUpdating = true;
+//     console.warn(
+//       'Your version (' +
+//         loadedVersion +
+//         ') seems to be out of date (' +
+//         currentVersion +
+//         '). Updating now...'
+//     );
+//     localStorage.setItem('stht-version', currentVersion);
+//     console.warn('Forcing the update...');
+//     setLoadingScreen(
+//       true,
+//       'Your version seems to be out of date (' +
+//         loadedVersion +
+//         '). Updating now...'
+//     );
+//     setTimeout(() => {
+//       window.location.reload(true);
+//     }, 5000);
+//     return false;
+//   }
 
-  return true;
-}
+//   return true;
+// }
 
 socket.on('reloadCards', () => {
   window.location.href = 'learn';

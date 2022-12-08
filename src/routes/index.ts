@@ -22,12 +22,13 @@ router.get('/', (req, res, next) => {
     user: req.session.user || null,
     disabled,
     dmsg,
+    random: config.VERSION,
   });
 });
 
 // Learn
 router.get('/learn', checkLogin, (req, res, next) => {
-  res.render(`${routerViewPrefix}learn`, { user: req.session.user || null, readonly: 0, cardid: req.params.cardId || null, version: config.VERSION });
+  res.render(`${routerViewPrefix}learn`, { user: req.session.user || null, readonly: 0, cardid: req.params.cardId || null, version: config.VERSION, random: config.VERSION, });
 });
 
 router.get('/learn/readonly/:cardId', (req, res, next) => {
@@ -35,7 +36,8 @@ router.get('/learn/readonly/:cardId', (req, res, next) => {
     user: req.session.user || null,
     cardid: req.params.cardId || null,
     readonly: 1,
-    version: config.VERSION
+    version: config.VERSION,
+    random: config.VERSION,
   });
 });
 
@@ -56,11 +58,12 @@ router.post('/login', (req: Request, res: Response, next: NextFunction) => {
       res.redirect('back');
       return;
     } else if (result === AccountResult.ERROR) {
-      res.render(`${routerViewPrefix}login`, { msg: 'Invalid credentials' });
+      res.render(`${routerViewPrefix}login`, { msg: 'Invalid credentials', random: config.VERSION, });
       return;
     } else if (result === AccountResult.UNKNOWN_USER) {
       res.render(`${routerViewPrefix}login`, {
         msg: `Unknown email: ${email}`,
+        random: config.VERSION,
       });
     } else {
       res.redirect('login');
@@ -75,6 +78,7 @@ export function checkLogin(req: Request, res: Response, next: NextFunction) {
     //res.redirect('login?next=' + req.params.next);
     res.render(`${routerViewPrefix}login`, {
       msg: 'You need to be authenticated in order to access this',
+      random: config.VERSION,
     });
   }
 }
@@ -96,13 +100,14 @@ router.get('/card/:cardId', (req, res, next) => {
   res.render(`${routerViewPrefix}card`, {
     user: req.session.user || null,
     cardid: req.params.cardId || null,
+    random: config.VERSION,
   });
 });
 
 // Admin
 router.get('/admin', checkLogin, (req, res, next) => {
   if (req.session.user && req.session.user === 'Yukogan') {
-    res.render('admin');
+    res.render('admin', { random: config.VERSION, });
   } else {
     res.json({
       error: 'No permission',
