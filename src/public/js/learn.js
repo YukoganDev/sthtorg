@@ -22,6 +22,7 @@ function loadCards() {
   if (readonly === 1) {
     document.querySelector('#create-term-btn').remove();
     document.querySelector('#rename-card-btn').remove();
+    document.querySelector('#view-card-btn').remove();
     document.querySelector('#delete-card-btn').remove();
     if (!passedCardId) {
       console.error(
@@ -164,7 +165,7 @@ function createCard({
                           class="btn btn-sm btn-outline-${buttonType}"
                         >
                           ${buttonName}
-                        </button>
+                          
                         <button
                           type="button"
                           onclick="${extraButtonAction}"
@@ -294,6 +295,10 @@ document.querySelector('#rename-card-btn').onclick = (el) => {
     document.querySelector('#cardRenameField').style.opacity = 1;
     document.querySelector('#cardRenameField').focus();
   }, 1);
+};
+
+document.querySelector('#view-card-btn').onclick = (el) => {
+  window.location.href = '/learn/readonly/' + getCardId();
 };
 
 function cardRenameFieldTyping(event) {
