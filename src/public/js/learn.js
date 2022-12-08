@@ -42,10 +42,12 @@ function loadCards() {
 
 socket.on('doneLoadingCards', () => {
   setLoadingScreen(false, null);
+  checkVersion();
 });
 
 socket.on('doneLoadingTerms', () => {
   setLoadingScreen(false, null);
+  checkVersion();
 });
 
 const renameCard = (el) => {
@@ -312,6 +314,23 @@ function cardRenameFieldTyping(event) {
       document.querySelector('#cardRenameField').hidden = true;
       sendPkt('renameCard', { cardId: getCardId(), name: text });
     }, 300);
+  }
+}
+
+let currentVersion = parseInt(document.querySelector('#version').dataset.version);
+let loadedVersion = parseInt(localStorage.getItem('stht-version'));
+function checkVersion() {
+  console.log('Loaded stht version: ' + loadedVersion + ', latest version: ' + currentVersion);
+  if (!loadedVersion) {
+    localStorage.setItem('stht-version', currentVersion);
+  }
+  if (loadedVersion !== currentVersion) {
+    console.warn('Your version (' + loadedVersion + ') seems to be out of date (' + currentVersion + '). Updating now...');
+    localStorage.setItem('stht-version', currentVersion);
+    setLoadingScreen(true, 'Your version seems to be out of date (' + loadedVersion + '). Updating now...');
+    setTimeout(() => {
+      window.location.reload(true);
+    }, 5000);
   }
 }
 

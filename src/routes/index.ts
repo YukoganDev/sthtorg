@@ -27,14 +27,15 @@ router.get('/', (req, res, next) => {
 
 // Learn
 router.get('/learn', checkLogin, (req, res, next) => {
-  res.render(`${routerViewPrefix}learn`, { user: req.session.user || null, readonly: 0, cardid: req.params.cardId || null });
+  res.render(`${routerViewPrefix}learn`, { user: req.session.user || null, readonly: 0, cardid: req.params.cardId || null, version: config.VERSION });
 });
 
 router.get('/learn/readonly/:cardId', (req, res, next) => {
   res.render(`${routerViewPrefix}learn`, {
     user: req.session.user || null,
     cardid: req.params.cardId || null,
-    readonly: 1
+    readonly: 1,
+    version: config.VERSION
   });
 });
 

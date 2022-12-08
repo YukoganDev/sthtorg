@@ -3,6 +3,7 @@ export type SthtConfig = {
   VERBOSE: boolean;
   SESSION_SECRET: string;
   DEV_MODE: boolean;
+  VERSION: number
 };
 
 export const config: SthtConfig = {
@@ -17,4 +18,7 @@ export const config: SthtConfig = {
 
   //
   DEV_MODE: true,
+
+  //
+  VERSION: 66
 };
