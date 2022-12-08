@@ -319,19 +319,21 @@ function cardRenameFieldTyping(event) {
 
 let currentVersion = parseInt(document.querySelector('#version').dataset.version);
 let loadedVersion = parseInt(localStorage.getItem('stht-version'));
-function checkVersion() {
-  console.log('Loaded stht version: ' + loadedVersion + ', latest version: ' + currentVersion);
-  if (!loadedVersion) {
-    localStorage.setItem('stht-version', currentVersion);
-  }
-  if (loadedVersion !== currentVersion) {
-    console.warn('Your version (' + loadedVersion + ') seems to be out of date (' + currentVersion + '). Updating now...');
-    localStorage.setItem('stht-version', currentVersion);
-    setLoadingScreen(true, 'Your version seems to be out of date (' + loadedVersion + '). Updating now...');
-    setTimeout(() => {
-      window.location.reload(true);
-    }, 5000);
-  }
+async function checkVersion() {
+  setTimeout(() => {
+    console.log('Loaded stht version: ' + loadedVersion + ', latest version: ' + currentVersion);
+    if (!loadedVersion) {
+      localStorage.setItem('stht-version', currentVersion);
+    }
+    if (loadedVersion !== currentVersion) {
+      console.warn('Your version (' + loadedVersion + ') seems to be out of date (' + currentVersion + '). Updating now...');
+      localStorage.setItem('stht-version', currentVersion);
+      setLoadingScreen(true, 'Your version seems to be out of date (' + loadedVersion + '). Updating now...');
+      setTimeout(() => {
+        window.location.reload(true);
+      }, 5000);
+    }
+  }, 10);
 }
 
 socket.on('reloadCards', () => {
