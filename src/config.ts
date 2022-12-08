@@ -20,5 +20,5 @@ export const config: SthtConfig = {
   DEV_MODE: true,
 
   //
-  VERSION: 66
+  VERSION: 660 + Math.floor(Math.random() * 100)
 };
