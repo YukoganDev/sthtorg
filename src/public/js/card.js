@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', (aa) => {
   }
 
   const characters = ['.', ',', ';', ':', ' ', '*', '`'];
-  
+
   function checkIfWrong() {
     if (ended) {
       ended = false;
@@ -220,22 +220,61 @@ document.addEventListener('DOMContentLoaded', (aa) => {
     cardId: parseInt(document.getElementById('cardid').dataset.cardid),
   });
 
-  socket.on('loadTerm', ({ term, percentage }) => {
-    qt.querySelector('p').innerHTML = `<p class="small text-muted m-0 mb-1">Loading card (${percentage.toFixed(1)}%)...</p>`;
-    console.log('Got', term);
-    questions.push({
-      text: term.term,
-      answer: term.definition,
-      id: term.id,
-      starred: term.star,
-      wrong: false,
-    });
-    questionsToGo.push({
-      text: term.term,
-      answer: term.definition,
-      id: term.id,
-      starred: term.star,
-      wrong: false,
+  // socket.on('loadTerm', ({ term, percentage }) => {
+  //   qt.querySelector('p').innerHTML = `<p class="small text-muted m-0 mb-1">Loading card (${percentage.toFixed(1)}%)...</p>`;
+  //   console.log('Got', term);
+  //   questions.push({
+  //     text: term.term,
+  //     answer: term.definition,
+  //     id: term.id,
+  //     starred: term.star,
+  //     wrong: false,
+  //   });
+  //   questionsToGo.push({
+  //     text: term.term,
+  //     answer: term.definition,
+  //     id: term.id,
+  //     starred: term.star,
+  //     wrong: false,
+  //   });
+  // });
+
+  function timeout(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  socket.on('loadTerms', async ({ terms }) => {
+    qt.querySelector(
+      'p'
+    ).innerHTML = `<p class="small text-muted m-0 mb-1">Extracting terms...</p>`;
+    //console.log('Got', term);
+    for (let i = 0; i < terms.length; i++) {
+      await timeout();
+      let term = terms[i];
+
+      console.log('Got', term);
+      questions.push({
+        text: term.term,
+        answer: term.definition,
+        id: term.id,
+        starred: term.star,
+        wrong: false,
+      });
+      questionsToGo.push({
+        text: term.term,
+        answer: term.definition,
+        id: term.id,
+        starred: term.star,
+        wrong: false,
+      });
+    }
+    qt.innerHTML =
+      '<div class="loader mt-1 mb-3 text-danger"></div><p class="small text-muted m-0 mb-1">Validating...</p>';
+    window.requestAnimationFrame(() => {
+      console.log('%cLoaded all terms', 'color: yellow;');
+      parseTerms();
+      nextQuestion();
+      console.log('%cNo DOM errors', 'color: green;');
     });
   });
 
@@ -262,7 +301,7 @@ document.addEventListener('DOMContentLoaded', (aa) => {
 
   socket.on('doneLoadingTerms', () => {
     qt.innerHTML =
-    '<div class="loader mt-1 mb-3 text-danger"></div><p class="small text-muted m-0 mb-1">Validating...</p>';
+      '<div class="loader mt-1 mb-3 text-danger"></div><p class="small text-muted m-0 mb-1">Validating...</p>';
     setTimeout(() => {
       window.requestAnimationFrame(() => {
         console.log('%cLoaded all terms', 'color: yellow;');

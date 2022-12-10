@@ -194,6 +194,24 @@ socket.on('loadCard', ({ card }) => {
   createCard({ name: card.name, card });
 });
 
+socket.on('loadCards', async ({ cards }) => {
+  setLoadingScreen(true, 'Extracting cards...');
+  for (let i = 0; i < cards.length; i++) {
+    await timeout();
+    let ncard = cards[i];
+    //console.log('Unpacking', ncard);
+    // if (readonly === 1) {
+    //   ncard.readonly = readonly;
+    // }
+    createCard({ name: ncard.name, card: ncard });
+  }
+  setLoadingScreen(false);
+});
+
+
+
+
+
 function setCardId(id) {
   if (typeof id === 'number') {
     currentCardId = id;
@@ -212,20 +230,19 @@ function edit(cardId) {
   setLoadingScreen(true, 'Loading terms...');
 }
 function setLoadingScreen(on, title) {
-    if (on) {
-      document.querySelector('.info-div').hidden = false;
-      document.querySelector('.learn-div').hidden = true;
-      document.querySelector(
-        '#start-btn'
-      ).innerHTML = `<div class="loader mt-1 mb-2"></div><p class="small text-muted m-0 mb-1">${title}</p>`;
-      return;
-    }
-    document.querySelector('.info-div').hidden = true;
-    document.querySelector('.learn-div').hidden = false;
-    // setTimeout(() => {
-    //   checkVersion();
-    // }, 0);
-    
+  if (on) {
+    document.querySelector('.info-div').hidden = false;
+    document.querySelector('.learn-div').hidden = true;
+    document.querySelector(
+      '#start-btn'
+    ).innerHTML = `<div class="loader mt-1 mb-2"></div><p class="small text-muted m-0 mb-1">${title}</p>`;
+    return;
+  }
+  document.querySelector('.info-div').hidden = true;
+  document.querySelector('.learn-div').hidden = false;
+  // setTimeout(() => {
+  //   checkVersion();
+  // }, 0);
 }
 
 socket.on('doneLoadingTerms', () => {
@@ -247,6 +264,39 @@ socket.on('loadTerm', ({ term }) => {
     nterm.readonly = readonly;
   }
   createTerm(nterm);
+});
+
+function timeout(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+let initialized = false;
+function init() {
+  if (initialized) {
+    return;
+  }
+  initialized = true;
+  // document.querySelector('.info-div').hidden = true;
+  document.querySelector('.learn-div').hidden = false;
+  document.querySelector('.cards').hidden = true;
+  document.querySelector('#terms').hidden = false;
+}
+
+socket.on('loadTerms', async ({ terms }) => {
+  init();
+  //console.log('Got', term);
+  
+  setLoadingScreen(true, 'Extracting terms...');
+  for (let i = 0; i < terms.length; i++) {
+    await timeout();
+    let nterm = terms[i];
+    //console.log('Unpacking', nterm);
+    if (readonly === 1) {
+      nterm.readonly = readonly;
+    }
+    createTerm(nterm);
+  }
+  setLoadingScreen(false);
 });
 
 function selectText(node) {

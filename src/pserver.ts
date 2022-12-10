@@ -162,7 +162,7 @@ io.on('connect', (socket) => {
     if (name) {
       if (!validateName(name)) {
         //socket.emit('reloadCards');
-        await timeout(2500);
+        await timeout(1500);
         socket.emit('error', 'Please enter a valid card name');
         socket.emit('reloadCards');
         return;
@@ -203,7 +203,7 @@ io.on('connect', (socket) => {
           socket.emit('loadTerm', { term });
           setTimeout(() => {
             socket.emit('doneLoadingTerms');
-          }, 250);
+          });
         }
       }
     );
@@ -247,27 +247,33 @@ io.on('connect', (socket) => {
       console.log(cardId, 'is not a number (socket overload?)');
       return;
     }
-    getCardTerms(cardId, (err: string, terms: any) => {
+    getCardTerms(cardId, async (err: string, terms: any) => {
       if (handleSocketError(socket, err)) {
         return;
       }
-      let delay = 25;
+      let delay = 0;
       let i = 0;
       console.log('- - - - terms - - - -');
       console.log(terms);
       console.log('- - - - - - - - - - -');
+      // for (i = 0; i < terms.length; i++) {
+      //   await timeout(0);
+      //   //socket.emit('loadTerm', { term: terms[i], percentage: (i / terms.length) * 100 });
+      // }
+      socket.emit('loadTerms', { terms });
+      //socket.emit('doneLoadingTerms');
       // setTimeout(() => {
-      let a = setInterval(() => {
-        console.log(i + 1);
+      // let a = setInterval(() => {
+      //   console.log(i + 1);
 
-        if (i++ >= terms.length) {
-          socket.emit('doneLoadingTerms');
-          clearInterval(a);
-          return;
-        }
-        let term = terms[i - 1];
-        socket.emit('loadTerm', { term, percentage: (i / terms.length) * 100 });
-      }, delay);
+      //   if (i++ >= terms.length) {
+      //     socket.emit('doneLoadingTerms');
+      //     clearInterval(a);
+      //     return;
+      //   }
+      //   let term = terms[i - 1];
+      //   socket.emit('loadTerm', { term, percentage: (i / terms.length) * 100 });
+      // }, delay);
       // }, 500);
 
       // for (let term of terms) {
@@ -306,25 +312,34 @@ io.on('connect', (socket) => {
       console.log('Sending cards to ' + name);
       getUserCards(name, (err: string, cards: any) => {
         console.log(err);
-        let i = 0;
-        let delay = 25;
+        // let i = 0;
+        // let delay = 0;
         console.log('- - - - cards - - - -');
         console.log(cards);
         console.log('- - - - - - - - - - -');
-        let a = setInterval(() => {
-          console.log(i + 1);
+        // for (let i = 0; i < cards.length; i++) {
+        //   socket.emit('loadCard', {
+        //     card: cards[i],
+        //     percentage: (i / cards.length) * 100,
+        //   });
+        // }
+        //socket.emit('doneLoadingCards');
+        
+      socket.emit('loadCards', { cards });
+        // let a = setInterval(() => {
+        //   console.log(i + 1);
 
-          if (i++ >= cards.length) {
-            socket.emit('doneLoadingCards');
-            clearInterval(a);
-            return;
-          }
-          let card = cards[i - 1];
-          socket.emit('loadCard', {
-            card,
-            percentage: (i / cards.length) * 100,
-          });
-        }, delay);
+        //   if (i++ >= cards.length) {
+        //     socket.emit('doneLoadingCards');
+        //     clearInterval(a);
+        //     return;
+        //   }
+        //   let card = cards[i - 1];
+        //   socket.emit('loadCard', {
+        //     card,
+        //     percentage: (i / cards.length) * 100,
+        //   });
+        // }, delay);
       });
     }
   });
