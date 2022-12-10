@@ -33,38 +33,58 @@ import {
   starTerm,
   unstarTerm,
 } from './accountdb/cardManagement';
-
-const privateKey = fs.readFileSync(
-  '/etc/letsencrypt/live/stht.org/privkey.pem',
-  'utf8'
-);
-const certificate = fs.readFileSync(
-  '/etc/letsencrypt/live/stht.org/cert.pem',
-  'utf8'
-);
-const ca = fs.readFileSync('/etc/letsencrypt/live/stht.org/chain.pem', 'utf8');
-
-const credentials = {
-  key: privateKey,
-  cert: certificate,
-  ca: ca,
-};
-
 import { parseCommand } from './controllers/admin';
-// Admin f
-async function parseAdminCommandBridge(cmd: any) {
-  parseCommand(cmd);
-}
 
 const app: Application = express();
 const httpServer: http.Server = http.createServer(app);
-const httpsServer: https.Server = https.createServer(credentials, app);
 
-const io: Server = new Server(httpsServer);
+type Credentials = {
+  key: string;
+  cert: string;
+  ca: string;
+};
+type HttpsServer = https.Server | null;
+
+let privateKey: string;
+let certificate: string;
+let ca: string;
+let credentials: Credentials;
+let httpsServer: HttpsServer;
+let io: Server;
+
+try {
+  privateKey = fs.readFileSync(
+    '/etc/letsencrypt/live/stht.org/privkey.pem',
+    'utf8'
+  );
+  certificate = fs.readFileSync(
+    '/etc/letsencrypt/live/stht.org/cert.pem',
+    'utf8'
+  );
+  ca = fs.readFileSync('/etc/letsencrypt/live/stht.org/chain.pem', 'utf8');
+
+  credentials = {
+    key: privateKey,
+    cert: certificate,
+    ca: ca,
+  };
+
+  httpsServer = https.createServer(credentials, app);
+
+  io = new Server(httpsServer);
+} catch (e) {
+  httpsServer = null;
+  io = new Server(httpServer);
+}
 
 interface Socket {
   on: (event: string, callback: (data: any) => void) => void;
   emit: (event: string, data: any) => void;
+}
+
+// Admin f
+async function parseAdminCommandBridge(cmd: any) {
+  parseCommand(cmd);
 }
 
 // View engine
@@ -94,8 +114,8 @@ let sessionMiddleware = session({
   },
   store: new RedisStore({
     client: redis,
-    disableTouch: true
-  })
+    disableTouch: true,
+  }),
 });
 app.use(sessionMiddleware);
 let emptyObj: any = {};
@@ -246,7 +266,7 @@ io.on('connect', (socket) => {
           return;
         }
         let term = terms[i - 1];
-        socket.emit('loadTerm', { term, percentage: i / terms.length * 100 });
+        socket.emit('loadTerm', { term, percentage: (i / terms.length) * 100 });
       }, delay);
       // }, 500);
 
@@ -300,7 +320,10 @@ io.on('connect', (socket) => {
             return;
           }
           let card = cards[i - 1];
-          socket.emit('loadCard', { card, percentage: i / cards.length * 100 });
+          socket.emit('loadCard', {
+            card,
+            percentage: (i / cards.length) * 100,
+          });
         }, delay);
       });
     }
@@ -340,6 +363,8 @@ httpServer.listen(config.PORT, () => {
   console.log(`Server running on port ${config.PORT}`);
 });
 
-httpsServer.listen(443, () => {
-  console.log('Also started https server');
-});
+if (httpsServer) {
+  httpsServer.listen(443, () => {
+    console.log('Also started https server');
+  });
+}
