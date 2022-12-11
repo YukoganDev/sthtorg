@@ -41,15 +41,18 @@ function parsePreference(preference, value) {
 
 let zoom = 1;
 let width = 100;
+let height = 100;
 let themeColor = 'dark';
 let themeBgColor = 'light';
 socket.on('loadPreferences', (preferences) => {
   zoom = parsePreference('scale', preferences.scale);
   width = 100 / zoom;
+  height = 100 / zoom;
 
   document.body.style.transformOrigin = 'left top';
   document.body.style.transform = 'scale(' + zoom + ')';
   document.body.style.width = width + '%';
+  document.body.style.maxHeight = height + '%';
 
   themeColor = parsePreference('theme', preferences.theme);
   document.body.classList.add('text-bg-' + themeColor);
