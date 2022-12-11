@@ -49,7 +49,7 @@ socket.on('loadPreferences', (preferences) => {
   height = 100 / zoom;
 
   document.body.style.transformOrigin = 'left top';
-  document.body.style.transform = 'scale(' + zoom + ')';
+  document.body.style.scale = zoom;
   document.body.style.width = width + '%';
   document.body.style.maxHeight = height + '%';
 
