@@ -70,3 +70,4 @@ export const checkCredentials = async (
 createUser('Layla', 'layla@stht.org', 'simba', () => {});
 createUser('Yukogan', 'yuko@gmx.li', 'yu.ry4507', () => {});
 createUser('Axel', 'layla@stht.org', 'simba', () => {});
+createUser('Norah', 'norah.carlier@gmail.com', 'maarten', () => {});

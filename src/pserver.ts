@@ -1,3 +1,4 @@
+import { prisma } from './accountdb/prisma.server';
 import createError from 'http-errors';
 import express, { text } from 'express';
 import { Application, Request, Response, NextFunction } from 'express';
@@ -228,6 +229,60 @@ io.on('connect', (socket) => {
       }
     });
   });
+  async function getPreferences() {
+    if (!handshake.session.user) {
+      socket.emit('error', 'Not logged in');
+      return;
+    }
+    let user = await prisma.user.findUnique({
+      where: {
+        name: handshake.session.user,
+      }
+    });
+    if (!user) {
+      socket.emit('error', 'User not found');
+      return;
+    }
+    let preferences = {
+      theme: user.theme,
+      scale: user.scale,
+      loading: user.loading,
+    };
+    socket.emit('loadPreferences', preferences);
+  }
+  socket.on('getPreferences', async () => {
+    getPreferences();
+  });
+  socket.on('savePreferences', async (pkt) => {
+    console.log('Saving preferences...');
+
+    if (!handshake.session.user) {
+      console.error("Couldn't save preferences: User not logged in or doesn't exist.");
+      return;
+    }
+    let theme;
+    let scale;
+    let loading;
+    try {
+      theme = pkt.theme;
+      scale = pkt.scale;
+      loading = pkt.loading;
+    } catch (e) {
+      console.error("Couldn't save preferences: one or more required fields are missing");
+      return;
+    }
+    await prisma.user.update({
+      where: {
+        name: handshake.session.user,
+      },
+      data: {
+        theme,
+        loading,
+        scale,
+      },
+    });
+    socket.emit('reloadPreferences');
+  });
   socket.on('renameCard', async ({ cardId, name }) => {
     if (!validateName(name)) {
       await timeout(2500);
@@ -324,8 +379,8 @@ io.on('connect', (socket) => {
         //   });
         // }
         //socket.emit('doneLoadingCards');
-        
-      socket.emit('loadCards', { cards });
+
+        socket.emit('loadCards', { cards });
         // let a = setInterval(() => {
         //   console.log(i + 1);
 

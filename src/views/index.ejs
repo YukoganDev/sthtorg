@@ -20,7 +20,7 @@
     <!-- Added Stylesheets -->
     <link href="/css/index.css?<%=random%>" rel="stylesheet" />
   </head>
-  <body class="d-flex h-100 text-center text-bg-warning">
+  <body class="d-flex h-100 text-center">
     <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
       <header class="mb-auto">
         <div>
@@ -69,11 +69,7 @@
     </div>
     <div id="user" data-user="<%=user%>"></div>
 
-    <script type="module">
-      import { io } from 'https://cdn.socket.io/4.4.1/socket.io.esm.min.js';
-
-      const socket = io();
-    </script>
+    <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
     <script src="/js/index.js?<%=random%>" defer></script>
   </body>
 </html>

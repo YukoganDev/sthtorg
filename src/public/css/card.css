@@ -36,7 +36,7 @@ html,
       transition: 0.3s;
       border-radius: 5px;
       height: 40px;
-      border: 2px solid rgb(202, 165, 0);
+      border: 2px solid rgb(117, 117, 117);
     }
     #qi:focus {
       outline: none;
