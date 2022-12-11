@@ -1,3 +1,4 @@
+import { prisma } from './../accountdb/prisma.server';
 import { User } from '@prisma/client';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
@@ -94,6 +95,53 @@ router.get('/logout', (req: Request, res: Response, next: NextFunction) => {
   req.session.user = undefined;
   res.redirect('/');
 });
+
+// Account
+router.get('/account', checkLogin, async (req: Request, res: Response, next: NextFunction) => {
+  if (!req.session.user) {
+    res.render(`${routerViewPrefix}login`, {
+      msg: 'There was an error gathering your account information. Please try to login again.',
+      random: config.VERSION,
+    });
+    return;
+  }
+  let user = await prisma.user.findUnique({
+    where: {
+          name: req.session.user,
+    }
+  });
+  if (!user) {
+    res.render(`${routerViewPrefix}login`, {
+      msg: 'There was an error gathering your account information. Please try to login again.',
+      random: config.VERSION,
+    });
+    return;
+  }
+  //console.log(user);
+  let type = 'User';
+  if (user.name === 'Yukogan') {
+    type = 'Admin';
+  }
+  
+  res.render(`${routerViewPrefix}account`, {
+    user: req.session.user || null,
+    pass: getHiddenPassword(user.password),
+    email: user.email,
+    random: config.VERSION,
+    userType: type,
+    p_Scale: user.scale,
+    p_Theme: user.theme,
+    p_Loading: user.loading
+  });
+});
+
+function getHiddenPassword(password: string) {
+  let hiddenPassword = '';
+  for (let i = 0; i < password.length; i++) {
+    hiddenPassword += '.';
+  }
+  return hiddenPassword;
+}
 
 // Card
 router.get('/card/:cardId', (req, res, next) => {

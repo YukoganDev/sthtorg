@@ -2,8 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
-  engineType = "binary"
+  provider      = "prisma-client-js"
+  engineType    = "binary"
   binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
@@ -22,14 +22,20 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
+
+  // preferences
+
+  theme   Int @default(0)
+  scale   Int @default(1)
+  loading Int @default(0)
 }
 
-model UserPreferences {
-  id         Int @id @unique @default(autoincrement())
-  pageScale  Int @default(1)
-  colorTheme Int @default(0)
-  userId     Int
-}
+// model UserPreferences {
+//   id         Int @id @unique @default(autoincrement())
+//   pageScale  Int @default(1)
+//   colorTheme Int @default(0)
+//   userId     Int
+// }
 
 model Card {
   id       Int    @id @unique @default(autoincrement())
@@ -41,7 +47,7 @@ model Card {
 }
 
 model Term {
-  id         Int    @id @default(autoincrement())
+  id         Int     @id @default(autoincrement())
   term       String
   definition String
   cardId     Int
@@ -50,8 +56,8 @@ model Term {
 }
 
 model Session {
-  id String @id
-  sid String @unique
-  data String
+  id        String   @id
+  sid       String   @unique
+  data      String
   expiresAt DateTime
 }

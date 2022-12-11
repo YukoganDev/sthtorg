@@ -1,18 +1,18 @@
 const socket = io();
 
-const loginBtn = document.querySelector('#login-btn');
+//const loginBtn = document.querySelector('#login-btn');
 
 let user = document.getElementById('user').dataset.user;
 let passedCardId = parseInt(document.getElementById('cardid').dataset.cardid);
 let readonly = parseInt(document.getElementById('readonly').dataset.readonly);
 console.log(user, passedCardId, readonly);
 console.log(`Logged in as ${user}`);
-if (user) {
-  loginBtn.innerHTML = `Logout (${user})`;
-  loginBtn.href = '/logout';
-} else {
-  loginBtn.innerHTML = `Login`;
-}
+// if (user) {
+//   loginBtn.innerHTML = `Logout (${user})`;
+//   loginBtn.href = '/logout';
+// } else {
+//   loginBtn.innerHTML = `Login`;
+// }
 
 document.getElementById('start-btn').onclick = () => {
   loadCards();

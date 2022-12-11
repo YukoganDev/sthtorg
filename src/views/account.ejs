@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
+      crossorigin="anonymous" />
+    <!-- JS -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
+      crossorigin="anonymous"
+      defer></script>
+    <title>My account - Stht.org</title>
+    <!-- Added Stylesheets -->
+    <link href="/css/index.css?<%=random%>" rel="stylesheet" />
+  </head>
+  <body class="d-flex h-100 text-center text-bg-warning">
+    <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+      <header class="mb-auto">
+        <div>
+          <h3 class="float-md-start mb-0">Stht.org</h3>
+          <nav class="nav nav-masthead justify-content-center float-md-end">
+            <a class="nav-link fw-bold py-1 px-0" aria-current="page" href="/"
+              >Home</a
+            >
+            <!-- <a class="nav-link fw-bold py-1 px-0" href="/contact"
+              >Contact</a
+            > -->
+            <a class="nav-link fw-bold py-1 px-0" href="/learn"
+              >Learn<sub class="text-muted">Bèta</sub></a
+            >
+            <a class="nav-link fw-bold py-1 px-0 active" href="/account"
+              >My account</a
+            >
+            <!-- <a class="nav-link fw-bold py-1 px-0" href="/login" id="login-btn"
+              >Loading...</a
+            > -->
+          </nav>
+        </div>
+      </header>
+
+      <main class="w-auto">
+        <h1 class="mb-5">Account Preferences</h1>
+        <div class="input-group mb-3">
+          <span class="input-group-text">Email</span>
+          <input
+            type="text"
+            class="form-control"
+            value="<%=email%>"
+            aria-label="Email"
+            disabled />
+          <span class="input-group-text">Name</span>
+          <input
+            type="text"
+            class="form-control"
+            value="<%=user%>"
+            aria-label="Username"
+            disabled />
+        </div>
+        <div class="input-group mb-3">
+          <span class="input-group-text">Password</span>
+          <input
+            type="password"
+            class="form-control"
+            value="<%=pass%>"
+            aria-label="Password"
+            disabled />
+          <span class="input-group-text">Type</span>
+          <input
+            type="text"
+            class="form-control"
+            value="<%=userType%>"
+            aria-label="userType"
+            disabled />
+        </div>
+        <div class="input-group">
+          <div class="form-floating">
+            <select
+              class="form-select <%=p_Theme%>"
+              id="theme-select"
+              aria-label="Floating label select example">
+              <option value="0">Dark 'Night'</option>
+              <option value="1">Light</option>
+              <option value="2">Dark</option>
+            </select>
+            <label for="theme-select">Theme</label>
+          </div>
+          <div class="form-floating">
+            <select
+              class="form-select <%=p_Scale%>"
+              id="loading-select"
+              aria-label="Floating label select example">
+              <option value="0">0.75</option>
+              <option value="1">1.00</option>
+              <option value="2">1.25</option>
+              <option value="3">1.50</option>
+              <option value="4">1.75</option>
+              <option value="5">2.00</option>
+            </select>
+            <label for="loading-select">Loading Mode</label>
+          </div>
+          <div class="form-floating">
+            <select
+              class="form-select <%=p_Loading%>"
+              id="loading-select"
+              aria-label="Floating label select example">
+              <option value="0">Performance</option>
+              <option value="1">Fast</option>
+            </select>
+            <label for="loading-select">Loading Mode</label>
+          </div>
+        </div>
+      </main>
+
+      <footer class="mt-auto text-white-50">
+        <p>&copy; Stht Studios 2022</p>
+      </footer>
+    </div>
+    <div id="user" data-user="<%=user%>"></div>
+
+    <script type="module">
+      import { io } from 'https://cdn.socket.io/4.4.1/socket.io.esm.min.js';
+
+      const socket = io();
+    </script>
+    <script src="/js/index.js?<%=random%>" defer></script>
+    <script src="/js/account.js?<%=random%>" defer></script>
+  </body>
+</html>
