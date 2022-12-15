@@ -67,6 +67,7 @@ socket.on('loadPreferences', (preferences) => {
   const qb = document.querySelector('#qb');
   const qi = document.querySelector('#qi');
   const sb = document.querySelector('#sb');
+  const skb = document.querySelector('#skb');
 
   const inputChangeAnimationTime = 30;
 
@@ -85,6 +86,10 @@ socket.on('loadPreferences', (preferences) => {
       check();
     }
   };
+
+  skb.onclick = () => {
+    check(true);
+  }
 
   qb.onclick = () => {
     check();
@@ -108,7 +113,7 @@ socket.on('loadPreferences', (preferences) => {
     console.log('%cChromium browser detected', 'color: green;');
   }
 
-  const characters = ['.', ',', ';', ':', ' ', '*', '`'];
+  const characters = ['.', ',', ';', ':', /*' ', */'*', '`'];
 
   function checkIfWrong() {
     if (ended) {
@@ -144,7 +149,22 @@ socket.on('loadPreferences', (preferences) => {
     }
   }
 
-  function check() {
+  function check(skip = false) {
+    if (skip) {
+        qf.innerHTML = '';
+        qf.innerHTML = `${currentQuestion.text}<br>= <p style="color: green;">${currentQuestion.answer}</p>`;
+        if (questionsToGo.length <= 0 || (questionsToGo.length <= 1 && !canContinue)) {
+          console.log('ending...');
+          end();
+          return;
+        }
+        
+        nextQuestion(false, true);
+        setTimeout(() => {
+          qi.select();
+        }, 0);
+        return;
+    }
     qi.style.animation = '';
     if (!currentQuestion) {
       nextQuestion();
@@ -250,7 +270,11 @@ socket.on('loadPreferences', (preferences) => {
     return canContinue;
   }
 
-  function nextQuestion(reset) {
+  function nextQuestion(reset = false, force = false) {
+    if (force) {
+      canContinue = true;
+      qi.classList.remove('incorrect');
+    }
     if (reset) {
       canContinue = false;
       setTimeout(() => {
