@@ -517,7 +517,7 @@ function createTerm({ term, definition, cardId, id, star, readonly }) {
                     ${term}
                   </p>
                   <hr />
-                  <p class="mb-0 opacity-75 definition" onfocus="selectText(this);" onkeypress="preventEnter(event);">
+                  <p class="mb-0 definition" onfocus="selectText(this);" onkeypress="preventEnter(event);">
                     ${definition}
                   </p>
                 </div>
@@ -557,7 +557,7 @@ function getAlternateReadonlyTerm(term, definition, cardId, id) {
                     ${term}
                   </p>
                   <hr />
-                  <p class="mb-0 opacity-75 definition">
+                  <p class="mb-0 definition">
                     ${definition}
                   </p>
                 </div>
